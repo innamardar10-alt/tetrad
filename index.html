@@ -1,0 +1,963 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Тетрадь по нейросетям</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Mono&family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<style>
+/* Layout: школьная тетрадь — зелёная обложка с наклейкой, лист в линейку с красными полями справа,
+   одинаковые блоки-вклейки; синим пишет ученик, красным — учитель (задания, пятёрки на полях) */
+:root{
+  --line:32px;
+  --fields:76px;
+  --desk:#e6ebf1;
+  --paper:#fbfcfe;
+  --ink:#1d2939;
+  --ink-soft:#5b6679;
+  --rule:#d3e2f2;
+  --rule-strong:#a9c4e2;
+  --margin:#e5918f;
+  --red:#c2372c;
+  --blue:#21509f;
+  --ok:#2b7457;
+  --cover:#2f6b56;
+  --cover-deep:#255a48;
+  --cover-tex:rgba(255,255,255,.06);
+  --cover-ink:#eef4ee;
+  --label-bg:#f7f9f5;
+  --label-ink:#1d2939;
+  --label-pen:#21509f;
+  --sticker:#ffffff;
+  --sticker-edge:#dbe3ec;
+  --sage:#e8f1eb;
+  --sage-edge:#5f8f79;
+  --shadow:0 1px 2px rgba(29,41,57,.08),0 12px 26px -16px rgba(29,41,57,.38);
+  --f-display:"PT Serif",Georgia,"Times New Roman",serif;
+  --f-body:"PT Sans","Segoe UI",Roboto,Arial,sans-serif;
+  --f-mono:"PT Mono",Consolas,"Courier New",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --desk:#0f141b; --paper:#17202b; --ink:#e3e9f1; --ink-soft:#9eabbd;
+    --rule:#223247; --rule-strong:#34507a; --margin:#8a4447;
+    --red:#ff8a7e; --blue:#9cbcff; --ok:#7fd1aa;
+    --cover:#275c4a; --cover-deep:#1f4a3b; --cover-tex:rgba(255,255,255,.05); --cover-ink:#e8efe9;
+    --sticker:#1d2734; --sticker-edge:#2c3a4c; --sage:#1b2d27; --sage-edge:#6fae93;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 26px -16px rgba(0,0,0,.75);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --desk:#0f141b; --paper:#17202b; --ink:#e3e9f1; --ink-soft:#9eabbd;
+  --rule:#223247; --rule-strong:#34507a; --margin:#8a4447;
+  --red:#ff8a7e; --blue:#9cbcff; --ok:#7fd1aa;
+  --cover:#275c4a; --cover-deep:#1f4a3b; --cover-tex:rgba(255,255,255,.05); --cover-ink:#e8efe9;
+  --sticker:#1d2734; --sticker-edge:#2c3a4c; --sage:#1b2d27; --sage-edge:#6fae93;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 26px -16px rgba(0,0,0,.75);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{background:var(--desk);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:var(--line);-webkit-font-smoothing:antialiased}
+a{color:var(--blue);text-decoration-thickness:1px;text-underline-offset:3px}
+a:hover{text-decoration-thickness:2px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:2px}
+code{font-family:var(--f-mono);font-size:.92em;background:var(--sage);padding:1px 5px;border-radius:3px}
+
+.wrap{max-width:920px;margin:0 auto;padding-inline:16px;padding-block:24px 56px;display:grid;grid-template-columns:minmax(0,1fr);gap:28px}
+
+/* ---------- Обложка ---------- */
+.cover{position:relative;overflow:hidden;background-color:var(--cover);
+  background-image:repeating-linear-gradient(135deg,var(--cover-tex) 0 2px,transparent 2px 9px);
+  color:var(--cover-ink);border-radius:6px 16px 16px 6px;box-shadow:var(--shadow);
+  padding-block:44px 28px;padding-inline:24px 24px;display:grid;gap:28px;justify-items:center}
+.cover::before{content:"";position:absolute;inset:0 auto 0 0;width:22px;background:var(--cover-deep)}
+.label{background:var(--label-bg);color:var(--label-ink);width:min(100%,460px);border-radius:6px;
+  padding:6px;box-shadow:0 2px 0 var(--cover-deep)}
+.label-in{border:3px double var(--cover);border-radius:4px;padding:22px 22px 18px;display:grid;gap:4px;text-align:center}
+.label-title{font-family:var(--f-display);font-weight:700;font-size:clamp(34px,8vw,46px);line-height:1.15;letter-spacing:.2em;margin:0 0 8px;padding-left:.2em}
+.label-row{display:flex;align-items:baseline;gap:10px;font-size:16px;line-height:34px;text-align:left}
+.label-row .fill{flex:1;min-width:0;border-bottom:1.5px solid var(--label-ink);color:var(--label-pen);
+  font-family:var(--f-display);font-style:italic;font-size:19px;padding-inline:6px;text-align:center}
+.label-row input.fill{background:transparent;border-top:0;border-left:0;border-right:0;outline-offset:4px;font:inherit;font-family:var(--f-display);font-style:italic;font-size:19px;color:var(--label-pen);height:34px}
+.label-row input.fill::placeholder{color:#8a93a3;font-style:italic}
+.label-foot{margin-top:12px;font-size:14px;line-height:1.4;color:#5b6679}
+.cover-foot{font-size:13px;letter-spacing:.14em;text-transform:uppercase;line-height:1.4;opacity:.9}
+
+/* ---------- Лист ---------- */
+.page{position:relative;background-color:var(--paper);
+  background-image:
+    linear-gradient(to left,transparent 0 var(--fields),var(--margin) var(--fields) calc(var(--fields) + 2px),transparent calc(var(--fields) + 2px)),
+    repeating-linear-gradient(to bottom,transparent 0 calc(var(--line) - 1px),var(--rule) calc(var(--line) - 1px) var(--line));
+  border-radius:4px;box-shadow:var(--shadow);min-width:0;
+  padding-block:var(--line) calc(var(--line) * 2);
+  padding-left:48px;padding-right:calc(var(--fields) + 28px)}
+.page > *{max-width:68ch}
+.page p{margin:0 0 var(--line)}
+.page ul,.page ol{margin:0 0 var(--line);padding-left:1.4em}
+.page li{line-height:var(--line)}
+.page li::marker{color:var(--ink-soft)}
+
+.today{text-align:center;color:var(--blue);font-family:var(--f-display);font-style:italic;font-size:20px;margin:0}
+.today + .today{margin-bottom:var(--line)}
+
+/* косая линейка — только в заголовке тетради */
+.propis{max-width:none;margin-bottom:var(--line);padding:16px 18px;border-radius:3px;background-color:var(--paper);
+  background-image:
+    repeating-linear-gradient(115deg,transparent 0 26px,var(--rule) 26px 27px),
+    repeating-linear-gradient(to bottom,transparent 0 19px,var(--rule-strong) 19px 20px,transparent 20px 31px,var(--rule) 31px 32px,transparent 32px 43px,var(--rule-strong) 43px 44px,transparent 44px 64px)}
+.propis h1{font-family:var(--f-display);font-weight:700;font-size:clamp(32px,6vw,50px);line-height:1.25;margin:0;text-wrap:balance;letter-spacing:-.005em}
+.propis p{margin:8px 0 0;font-size:18px;color:var(--ink-soft);line-height:1.5}
+
+.lead{font-size:19px}
+.progress{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;margin:0 0 var(--line)}
+.progress b{font-family:var(--f-display);font-style:italic;color:var(--red);font-size:24px;font-variant-numeric:tabular-nums}
+
+h2{font-family:var(--f-display);font-weight:700;font-size:32px;line-height:var(--line);margin:0 0 var(--line);text-wrap:balance;padding-top:8px}
+h3{font-family:var(--f-display);font-weight:700;font-size:22px;line-height:var(--line);margin:var(--line) 0 0;text-wrap:balance}
+h3 + p,h3 + ol,h3 + ul{margin-top:0}
+
+.kicker{margin:0;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
+.kicker span{color:var(--blue)}
+
+.lesson{padding-top:calc(var(--line) * 2);scroll-margin-top:16px}
+.lesson-intro{scroll-margin-top:16px}
+
+/* ---------- Условные обозначения ---------- */
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:0 0 var(--line);max-width:none}
+.legend > div{background:var(--sticker);border:1px solid var(--sticker-edge);border-radius:6px;padding:14px 16px;display:grid;gap:10px;align-content:start;min-width:0}
+.legend p{margin:0;font-size:15px;line-height:1.5;color:var(--ink-soft)}
+.mini{justify-self:start}
+
+/* ---------- Содержание ---------- */
+.toc{list-style:none;padding:0;margin:0 0 var(--line)}
+.toc li{line-height:var(--line)}
+.toc a{display:flex;align-items:baseline;gap:8px;color:var(--ink);text-decoration:none}
+.toc a:hover .toc-name{text-decoration:underline;text-underline-offset:3px}
+.toc .lead-dots{flex:1;min-width:12px;border-bottom:2px dotted var(--ink-soft);transform:translateY(-7px);opacity:.6}
+.toc .toc-num{color:var(--blue);font-family:var(--f-display);font-style:italic;white-space:nowrap}
+
+/* ---------- Блок «Запомни» ---------- */
+.remember{background:var(--sage);border:1.5px solid var(--sage-edge);border-radius:4px;padding:12px 18px 14px;margin:0 0 var(--line);line-height:1.55}
+.remember p{margin:0}
+.remember p + p{margin-top:8px}
+.tag-remember{display:inline-block;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--sage-edge);margin-bottom:4px}
+.formula{font-family:var(--f-display);font-size:19px;font-weight:700}
+
+/* ---------- Блок «Коннектор» ---------- */
+.conn{display:grid;grid-template-columns:40px minmax(0,1fr);gap:14px;align-items:start;margin:0 0 var(--line)}
+.conn p{margin:0}
+.plug{width:40px;height:40px;color:var(--blue);margin-top:-4px}
+.conn-word{font-weight:700;color:var(--blue);text-decoration:underline wavy var(--blue);text-decoration-thickness:1.5px;text-underline-offset:5px}
+.conn-mark{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.conn-mark svg{width:20px;height:20px;color:var(--blue);flex:none}
+
+/* ---------- Домашняя работа ---------- */
+.hw{position:relative;margin:0 0 var(--line)}
+.hw-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px}
+.hw-title{font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--red);text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:5px}
+.hw-count{font-size:14px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.checks{list-style:none;padding:0 !important;margin:0 !important}
+.checks li{line-height:var(--line)}
+.checks label{display:grid;grid-template-columns:22px minmax(0,1fr);gap:12px;cursor:pointer}
+.checks input{position:absolute;opacity:0;width:22px;height:22px;margin:0}
+.box{width:20px;height:20px;margin-top:6px;border:1.5px solid var(--ink-soft);border-radius:3px;background:var(--paper);position:relative}
+.checks input:checked + .box{border-color:var(--blue)}
+.checks input:checked + .box::after{content:"";position:absolute;left:5px;top:0;width:6px;height:12px;border-right:2.5px solid var(--blue);border-bottom:2.5px solid var(--blue);transform:rotate(42deg)}
+.checks input:focus-visible + .box{outline:2px solid var(--blue);outline-offset:2px}
+.checks input:checked ~ .txt{color:var(--ink-soft)}
+.grade{position:absolute;top:-4px;right:calc(-1 * (var(--fields) + 28px));width:var(--fields);text-align:center;
+  font-family:var(--f-display);font-style:italic;font-weight:700;font-size:44px;line-height:1;color:var(--red);
+  opacity:0;transform:scale(.4) rotate(-10deg);transition:opacity .25s ease,transform .35s cubic-bezier(.2,1.6,.4,1);pointer-events:none}
+.hw.done .grade{opacity:1;transform:scale(1) rotate(-10deg)}
+
+/* ---------- Скопируй ---------- */
+.copy{border:1.5px dashed var(--ink-soft);border-radius:4px;background:var(--sticker);margin:0 0 var(--line);min-width:0}
+.copy-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:6px 8px 6px 14px;border-bottom:1.5px dashed var(--sticker-edge)}
+.tag-copy{font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--blue)}
+.copy-btn{font:700 14px/1 var(--f-body);background:var(--blue);color:var(--paper);border:0;border-radius:3px;padding:9px 14px;cursor:pointer;white-space:nowrap}
+.copy-btn:hover{filter:brightness(1.08)}
+.copy pre{margin:0;padding:12px 14px 14px;font-family:var(--f-mono);font-size:15px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ink)}
+
+/* ---------- Инструмент из трёх букв ---------- */
+.tri{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:13.5px;line-height:1.3;padding:4px 11px 4px 8px;border-radius:999px;border:1.5px solid currentColor}
+.tri .dots{display:inline-flex;gap:2px}
+.tri .dots i{width:5px;height:5px;border-radius:50%;background:currentColor}
+.tri-no{color:var(--ok)}
+.tri-yes{color:var(--red)}
+.tri-maybe{color:var(--ink-soft);border-style:dashed}
+
+/* ---------- Карточка нейросети (вклейка) ---------- */
+.ai{background:var(--sticker);border:1px solid var(--sticker-edge);border-radius:6px;box-shadow:var(--shadow);
+  padding:20px 22px 22px;margin:var(--line) 0 18px;max-width:none;line-height:1.55;min-width:0}
+.ai-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px;border-bottom:1.5px solid var(--sticker-edge);padding-bottom:10px}
+.ai h3{margin:0;font-size:30px;line-height:1.15}
+.kind{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-soft);font-weight:700}
+.ai .tri{margin-top:12px}
+.rows{display:grid;grid-template-columns:8.6em minmax(0,1fr);gap:10px 18px;margin:14px 0 0}
+.rows dt{font-weight:700;color:var(--ink-soft);font-size:15px;padding-top:1px}
+.rows dd{margin:0;min-width:0}
+.rows ul{margin:0;padding-left:1.15em}
+.rows li{line-height:1.55}
+.rows li + li{margin-top:2px}
+.get{font-weight:700}
+
+/* ---------- Таблица ---------- */
+.tbl{overflow-x:auto;margin:0 0 var(--line);max-width:none}
+table{border-collapse:collapse;background:var(--sticker);min-width:520px;width:100%;font-size:15.5px;line-height:1.45}
+th,td{border:1px solid var(--rule-strong);padding:8px 12px;text-align:left;vertical-align:top}
+th{font-weight:700;color:var(--ink-soft);font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+td.yes{color:var(--ok);font-weight:700}
+td.no{color:var(--ink-soft)}
+
+/* ---------- Словарик ---------- */
+.words{display:grid;grid-template-columns:minmax(0,11em) minmax(0,1fr);gap:0 18px;margin:0 0 var(--line)}
+.words dt{font-weight:700;line-height:var(--line)}
+.words dd{margin:0;line-height:var(--line)}
+
+/* ---------- Работа над ошибками ---------- */
+.fix{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);margin:0 0 var(--line);max-width:none}
+.fix > div{padding:8px 0;border-bottom:1px solid var(--rule-strong);line-height:1.55}
+.fix .fix-h{font-size:13px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--ink-soft)}
+.fix .err{color:var(--red);font-weight:700;padding-right:16px}
+
+.note{font-size:15px;color:var(--ink-soft);line-height:1.55;border-top:1px solid var(--rule-strong);padding-top:14px;margin-top:calc(var(--line) * 2) !important}
+
+@media (max-width:640px){
+  :root{--fields:42px}
+  body{font-size:16px}
+  .page{padding-left:16px;padding-right:calc(var(--fields) + 12px)}
+  .grade{right:calc(-1 * (var(--fields) + 12px));font-size:30px}
+  .rows{grid-template-columns:minmax(0,1fr);gap:2px 0}
+  .rows dd{margin-bottom:10px}
+  .words{grid-template-columns:minmax(0,1fr)}
+  .words dd{margin-bottom:8px;line-height:1.5}
+  .fix{grid-template-columns:minmax(0,1fr)}
+  .fix .fix-h:nth-child(2){display:none}
+  .fix .err{border-bottom:0;padding-bottom:0}
+  .ai{padding:16px 16px 18px}
+  .ai h3{font-size:26px}
+  .conn{grid-template-columns:30px minmax(0,1fr);gap:10px}
+  .plug{width:30px;height:30px}
+  h2{font-size:27px}
+}
+@media (prefers-reduced-motion:reduce){
+  .grade{transition:none}
+}
+</style>
+<style>body{margin:0}</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="cover">
+    <div class="label">
+      <div class="label-in">
+        <p class="label-title">ТЕТРАДЬ</p>
+        <div class="label-row"><span>для работ по</span><span class="fill">нейросетям</span></div>
+        <div class="label-row"><label for="student-name">ученика(цы)</label><input class="fill" id="student-name" type="text" placeholder="впишите имя" autocomplete="off"></div>
+        <div class="label-row"><span>уровень</span><span class="fill">начинающий</span></div>
+        <p class="label-foot">Бесплатные нейросети: с чего начать</p>
+      </div>
+    </div>
+    <p class="cover-foot">в линейку · 7 уроков</p>
+  </header>
+
+  <main class="page">
+
+    <p class="today" id="today">Четырнадцатое октября</p>
+    <p class="today">Классная работа</p>
+
+    <div class="propis">
+      <h1>Бесплатные нейросети</h1>
+      <p>Рабочая тетрадь для тех, кто только начинает</p>
+    </div>
+
+    <p class="lead">Семь сервисов с бесплатным входом, урок на каждую тему и домашняя работа к каждому уроку. Отметили все задания в блоке — на полях появится пятёрка.</p>
+    <p>Нейросеть здесь помощник. Дело ведёте вы.</p>
+
+    <p class="progress"><span>Пятёрок на полях:</span><b id="fives">0</b><span>из</span><b id="total">0</b></p>
+
+    <div class="remember">
+      <span class="tag-remember">Запомни!</span>
+      <p>Бесплатные лимиты меняются, поэтому цифр в тетради нет. «Лимит исчерпан» значит: на сегодня всё. Лимит вернётся через несколько часов или завтра, а пока переходите в другой сервис из тетради.</p>
+    </div>
+
+    <section class="lesson-intro" aria-labelledby="h-legend">
+      <h2 id="h-legend">Условные обозначения</h2>
+      <p>В тетради шесть видов блоков. Каждый всегда выглядит одинаково, так его проще узнать с первого взгляда.</p>
+      <div class="legend">
+        <div>
+          <div class="remember mini" style="margin:0;padding:6px 12px"><span class="tag-remember" style="margin:0">Запомни!</span></div>
+          <p>Правило. Его стоит выучить, оно пригодится везде.</p>
+        </div>
+        <div>
+          <span class="mini conn-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 2v5M15 2v5"/><path d="M6 7h12v4a6 6 0 0 1-12 0z"/><path d="M12 17v5"/></svg><span class="conn-word">Коннектор</span></span>
+          <p>Провод между нейросетью и вашими сервисами: почтой, диском, GitHub.</p>
+        </div>
+        <div>
+          <span class="mini hw-title">Домашняя работа</span>
+          <p>Задания с галочками. Сделали все в блоке — на полях пятёрка.</p>
+        </div>
+        <div>
+          <span class="mini tag-copy" style="border:1.5px dashed var(--ink-soft);border-radius:4px;padding:4px 10px">Скопируй</span>
+          <p>Готовый текст для нейросети. Кнопка «Скопировать» рядом.</p>
+        </div>
+        <div>
+          <span class="mini tri tri-yes"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>нужен инструмент из трёх букв</span>
+          <p>Напрямую из России сервис не открывается.</p>
+        </div>
+        <div>
+          <span class="mini" style="font-family:var(--f-display);font-weight:700;font-size:20px;line-height:1.3;border:1px solid var(--sticker-edge);border-radius:6px;padding:4px 12px;box-shadow:var(--shadow)">Карточка</span>
+          <p>Вклейка про одну нейросеть. У всех семи одинаковые строки.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="lesson-intro" aria-labelledby="h-toc">
+      <h2 id="h-toc">Содержание</h2>
+      <ol class="toc">
+        <li><a href="#urok-1"><span class="toc-name">Коннектор</span><span class="lead-dots"></span><span class="toc-num">урок 1</span></a></li>
+        <li><a href="#urok-2"><span class="toc-name">Семь нейросетей</span><span class="lead-dots"></span><span class="toc-num">урок 2</span></a></li>
+        <li><a href="#urok-3"><span class="toc-name">GitHub</span><span class="lead-dots"></span><span class="toc-num">урок 3</span></a></li>
+        <li><a href="#urok-4"><span class="toc-name">Практика: документ, видео, мультик, промт</span><span class="lead-dots"></span><span class="toc-num">урок 4</span></a></li>
+        <li><a href="#urok-5"><span class="toc-name">Сайт на GitHub бесплатно</span><span class="lead-dots"></span><span class="toc-num">урок 5</span></a></li>
+        <li><a href="#urok-6"><span class="toc-name">Работа над ошибками</span><span class="lead-dots"></span><span class="toc-num">урок 6</span></a></li>
+        <li><a href="#urok-7"><span class="toc-name">Тетрадь-проводник</span><span class="lead-dots"></span><span class="toc-num">урок 7</span></a></li>
+      </ol>
+    </section>
+
+    <!-- ================= УРОК 1 ================= -->
+    <section class="lesson" id="urok-1" aria-labelledby="h-1">
+      <p class="kicker"><span>Урок 1</span> · Классная работа</p>
+      <h2 id="h-1">Коннектор</h2>
+
+      <div class="conn">
+        <svg class="plug" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 2v5M15 2v5"/><path d="M6 7h12v4a6 6 0 0 1-12 0z"/><path d="M12 17v5"/></svg>
+        <p><span class="conn-word">Коннектор</span> — это провод между нейросетью и вашим сервисом: почтой, Google Диском, GitHub. Подключаете один раз, и нейросеть сама берёт оттуда файлы. Текст больше не нужно копировать в чат.</p>
+      </div>
+
+      <p>Пример: подключили Google Диск и пишете «найди на моём диске прайс и сделай из него пост». Нейросеть находит файл сама.</p>
+
+      <h3>Где искать</h3>
+      <p>В настройках сервиса. Раздел называется по-разному: «Коннекторы», «Интеграции», «Приложения», Connectors, Apps, MCP.</p>
+
+      <h3>Как подключить</h3>
+      <ol>
+        <li>Откройте настройки и найдите раздел с коннекторами.</li>
+        <li>Выберите сервис, например GitHub.</li>
+        <li>Нажмите «Подключить» (Connect).</li>
+        <li>Откроется окно GitHub или Google. Войдите и нажмите «Разрешить» (Authorize или Allow).</li>
+        <li>Вернитесь в чат. В некоторых сервисах коннектор надо ещё включить в самом чате: через значок инструментов или «+» у поля ввода.</li>
+      </ol>
+
+      <div class="remember">
+        <span class="tag-remember">Запомни!</span>
+        <p>Давайте доступ только к тому, что нужно для работы. Отключить коннектор можно в тех же настройках одной кнопкой.</p>
+      </div>
+
+      <h3>У кого есть коннекторы</h3>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Нейросеть</th><th>Коннекторы</th><th>Где включать</th></tr></thead>
+          <tbody>
+            <tr><td>Genspark</td><td class="yes">есть: GitHub, Gmail, Google Диск и другие</td><td>Skills → вкладка Connectors</td></tr>
+            <tr><td>Qwen</td><td class="yes">есть, в том числе GitHub</td><td>настройки</td></tr>
+            <tr><td>ChatGPT</td><td class="yes">есть, в том числе GitHub</td><td>Настройки → Приложения</td></tr>
+            <tr><td>Claude</td><td class="yes">есть, в том числе GitHub</td><td>раздел «Коннекторы»</td></tr>
+            <tr><td>Sider</td><td class="no">проверьте в настройках</td><td>—</td></tr>
+            <tr><td>DeepSeek</td><td class="no">нет</td><td>—</td></tr>
+            <tr><td>Алиса AI</td><td class="no">нет</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="remember">
+        <span class="tag-remember">Запомни!</span>
+        <p>Самый полезный коннектор для работы — GitHub. Что это такое, разберём в уроке 3.</p>
+      </div>
+
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw1-1"><span class="box"></span><span class="txt">Откройте Genspark или Qwen и найдите раздел с коннекторами.</span></label></li>
+          <li><label><input type="checkbox" id="hw1-2"><span class="box"></span><span class="txt">Посмотрите, какие сервисы там можно подключить.</span></label></li>
+          <li><label><input type="checkbox" id="hw1-3"><span class="box"></span><span class="txt">Решите, какой коннектор пригодится вам первым.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+    </section>
+
+    <!-- ================= УРОК 2 ================= -->
+    <section class="lesson" id="urok-2" aria-labelledby="h-2">
+      <p class="kicker"><span>Урок 2</span> · Классная работа</p>
+      <h2 id="h-2">Семь нейросетей</h2>
+      <p>У каждой нейросети одинаковая карточка. Идите по порядку: прочитали карточку, открыли сайт, сделали домашнюю работу.</p>
+
+      <!-- Sider -->
+      <article class="ai" id="sider">
+        <header class="ai-head"><h3>Sider</h3><span class="kind">панель в браузере</span></header>
+        <span class="tri tri-maybe"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>если не открывается — инструмент из трёх букв</span>
+        <dl class="rows">
+          <dt>Что это</dt>
+          <dd>Панель сбоку браузера, которая собирает много нейросетей в одном месте: ChatGPT, Claude, Gemini, DeepSeek и другие. Переключаетесь между ними, не уходя со страницы, на которой работаете.</dd>
+          <dt>Где взять</dt>
+          <dd><a class="get" href="https://chromewebstore.google.com/detail/difoiogjjojoaoomphldepapgpbgkhkb" target="_blank" rel="noopener">Скачать в магазине Google Chrome</a><br>Подходит для Chrome, Яндекс Браузера и Edge. Сайт: <a href="https://sider.ai" target="_blank" rel="noopener">sider.ai</a></dd>
+          <dt>Что умеет</dt>
+          <dd><ul>
+            <li>пересказать страницу, PDF или видео с YouTube, которое у вас открыто;</li>
+            <li>перевести выделенный текст;</li>
+            <li>написать текст, код или скрипт;</li>
+            <li>справа открывается рабочее окно, где видно код и результат. С ним работаете как с обычным чатом.</li>
+          </ul></dd>
+          <dt>Бесплатно</dt>
+          <dd>Дневной лимит запросов на лёгкие модели.</dd>
+          <dt><span class="conn-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 2v5M15 2v5"/><path d="M6 7h12v4a6 6 0 0 1-12 0z"/><path d="M12 17v5"/></svg>Коннекторы</span></dt>
+          <dd>Проверьте в настройках.</dd>
+        </dl>
+      </article>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw-sider-1"><span class="box"></span><span class="txt">Откройте магазин Google Chrome по ссылке и нажмите «Установить».</span></label></li>
+          <li><label><input type="checkbox" id="hw-sider-2"><span class="box"></span><span class="txt">Нажмите на значок пазла справа вверху браузера и закрепите Sider, чтобы он был под рукой.</span></label></li>
+          <li><label><input type="checkbox" id="hw-sider-3"><span class="box"></span><span class="txt">Откройте любую статью и попросите: «Перескажи эту страницу в пяти пунктах простыми словами».</span></label></li>
+          <li><label><input type="checkbox" id="hw-sider-4"><span class="box"></span><span class="txt">Задайте тот же вопрос двум разным моделям и сравните ответы.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+
+      <!-- Genspark -->
+      <article class="ai" id="genspark">
+        <header class="ai-head"><h3>Genspark</h3><span class="kind">агент</span></header>
+        <span class="tri tri-maybe"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>если не открывается — инструмент из трёх букв</span>
+        <dl class="rows">
+          <dt>Что это</dt>
+          <dd>Агент. Обычный чат отвечает на вопрос, а агент сам выполняет задачу по шагам и отдаёт готовый результат: презентацию, таблицу, документ, страницу с исследованием.</dd>
+          <dt>Где взять</dt>
+          <dd><a class="get" href="https://www.genspark.ai" target="_blank" rel="noopener">genspark.ai</a>, есть приложение для телефона.</dd>
+          <dt>Что умеет</dt>
+          <dd><ul>
+            <li>AI Slides — презентации;</li>
+            <li>AI Sheets — таблицы;</li>
+            <li>AI Docs — документы;</li>
+            <li>Super Agent — задача из нескольких шагов;</li>
+            <li>AI Drive — свой диск, куда агент складывает файлы.</li>
+          </ul></dd>
+          <dt>Бесплатно</dt>
+          <dd>Дневные кредиты, карта не нужна. Задачи агента тратят кредиты быстро, начинайте с маленьких.</dd>
+          <dt><span class="conn-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 2v5M15 2v5"/><path d="M6 7h12v4a6 6 0 0 1-12 0z"/><path d="M12 17v5"/></svg>Коннекторы</span></dt>
+          <dd>Есть: Gmail, Google Диск и Документы, GitHub и другие. Раздел Skills, вкладка Connectors.</dd>
+        </dl>
+      </article>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw-gen-1"><span class="box"></span><span class="txt">Зарегистрируйтесь.</span></label></li>
+          <li><label><input type="checkbox" id="hw-gen-2"><span class="box"></span><span class="txt">Попросите: «Сделай презентацию из 5 слайдов о моей услуге: [опишите услугу в двух предложениях]».</span></label></li>
+          <li><label><input type="checkbox" id="hw-gen-3"><span class="box"></span><span class="txt">Откройте вкладку Connectors и посмотрите, что можно подключить.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+
+      <!-- Qwen -->
+      <article class="ai" id="qwen">
+        <header class="ai-head"><h3>Qwen</h3><span class="kind">чат · картинки · видео · код</span></header>
+        <span class="tri tri-maybe"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>если не открывается — инструмент из трёх букв</span>
+        <dl class="rows">
+          <dt>Что это</dt>
+          <dd>Нейросеть компании Alibaba. Пишет тексты, рисует картинки, делает короткие видео и пишет код.</dd>
+          <dt>Где взять</dt>
+          <dd><a class="get" href="https://chat.qwen.ai" target="_blank" rel="noopener">chat.qwen.ai</a>, есть приложение для телефона.</dd>
+          <dt>Что умеет</dt>
+          <dd><ul>
+            <li>тексты и ответы на вопросы;</li>
+            <li>картинки по описанию;</li>
+            <li>видео: короткие ролики около 5 секунд, по тексту или из картинки;</li>
+            <li>код: в списке моделей выберите модель со словом Coder.</li>
+          </ul></dd>
+          <dt>Бесплатно</dt>
+          <dd>Да. Видео включено не на всех аккаунтах: если кнопки видео нет, у вас её пока не открыли.</dd>
+          <dt><span class="conn-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 2v5M15 2v5"/><path d="M6 7h12v4a6 6 0 0 1-12 0z"/><path d="M12 17v5"/></svg>Коннекторы</span></dt>
+          <dd>Есть, в том числе GitHub.</dd>
+        </dl>
+      </article>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw-qwen-1"><span class="box"></span><span class="txt">Попросите картинку: «Открытка в акварели: чашка чая на подоконнике, за окном осень».</span></label></li>
+          <li><label><input type="checkbox" id="hw-qwen-2"><span class="box"></span><span class="txt">Сделайте из неё видео: «Пар поднимается от чашки, за окном падают листья, камера стоит на месте».</span></label></li>
+          <li><label><input type="checkbox" id="hw-qwen-3"><span class="box"></span><span class="txt">Переключитесь на Coder и попросите: «Сделай простую страницу-визитку: имя, чем занимаюсь, кнопка "Написать мне"». Сохраните код, он пригодится в уроке 5.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+
+      <!-- DeepSeek -->
+      <article class="ai" id="deepseek">
+        <header class="ai-head"><h3>DeepSeek</h3><span class="kind">чат · тексты и код</span></header>
+        <span class="tri tri-no"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>работает без инструмента из трёх букв</span>
+        <dl class="rows">
+          <dt>Что это</dt>
+          <dd>Китайская нейросеть. Хорошо справляется с текстами, разборами и кодом.</dd>
+          <dt>Где взять</dt>
+          <dd><a class="get" href="https://chat.deepseek.com" target="_blank" rel="noopener">chat.deepseek.com</a>, есть приложение для телефона.</dd>
+          <dt>Что умеет</dt>
+          <dd><ul>
+            <li>писать и разбирать тексты, отвечать на сложные вопросы;</li>
+            <li>писать код;</li>
+            <li>читать загруженные файлы;</li>
+            <li>думать подольше и искать в интернете — кнопки под полем ввода.</li>
+          </ul>
+          Не умеет рисовать картинки и делать видео.</dd>
+          <dt>Бесплатно</dt>
+          <dd>Да.</dd>
+          <dt><span class="conn-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 2v5M15 2v5"/><path d="M6 7h12v4a6 6 0 0 1-12 0z"/><path d="M12 17v5"/></svg>Коннекторы</span></dt>
+          <dd>Нет.</dd>
+        </dl>
+      </article>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw-ds-1"><span class="box"></span><span class="txt">Попросите: «Напиши три варианта описания моей услуги: [услуга]. Простыми словами, без рекламных слов».</span></label></li>
+          <li><label><input type="checkbox" id="hw-ds-2"><span class="box"></span><span class="txt">Включите режим размышления и задайте тот же вопрос. Сравните ответы.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+
+      <!-- Алиса -->
+      <article class="ai" id="alisa">
+        <header class="ai-head"><h3>Алиса AI</h3><span class="kind">чат · Яндекс</span></header>
+        <span class="tri tri-no"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>работает без инструмента из трёх букв</span>
+        <dl class="rows">
+          <dt>Что это</dt>
+          <dd>Нейросеть Яндекса. Хорошо понимает русский язык и российские реалии.</dd>
+          <dt>Где взять</dt>
+          <dd><a class="get" href="https://alice.yandex.ru" target="_blank" rel="noopener">alice.yandex.ru</a>, приложение «Алиса AI» на телефон. Ещё Алиса есть в Telegram и Max.</dd>
+          <dt>Что умеет</dt>
+          <dd><ul>
+            <li>отвечать на вопросы и писать тексты;</li>
+            <li>рисовать картинки;</li>
+            <li>оживлять фото;</li>
+            <li>пересказывать документы;</li>
+            <li>разговаривать голосом.</li>
+          </ul></dd>
+          <dt>Бесплатно</dt>
+          <dd>Да. Подписка «Алиса Плюс» или «Алиса Pro» нужна тем, кому не хватает бесплатного.</dd>
+          <dt><span class="conn-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 2v5M15 2v5"/><path d="M6 7h12v4a6 6 0 0 1-12 0z"/><path d="M12 17v5"/></svg>Коннекторы</span></dt>
+          <dd>Нет.</dd>
+        </dl>
+      </article>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw-al-1"><span class="box"></span><span class="txt">Надиктуйте голосом мысль, как она есть, и попросите: «Сделай из этого пост для ВК, сохрани мои слова».</span></label></li>
+          <li><label><input type="checkbox" id="hw-al-2"><span class="box"></span><span class="txt">Загрузите фото и попробуйте его оживить.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+
+      <!-- ChatGPT -->
+      <article class="ai" id="chatgpt">
+        <header class="ai-head"><h3>ChatGPT</h3><span class="kind">чат</span></header>
+        <span class="tri tri-yes"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>нужен инструмент из трёх букв</span>
+        <dl class="rows">
+          <dt>Что это</dt>
+          <dd>Самая известная нейросеть. Напрямую из России официально не работает.</dd>
+          <dt>Где взять</dt>
+          <dd><a class="get" href="https://chatgpt.com" target="_blank" rel="noopener">chatgpt.com</a>, есть приложение для компьютера и телефона.</dd>
+          <dt>Что умеет</dt>
+          <dd><ul>
+            <li>тексты и картинки;</li>
+            <li>разбор файлов;</li>
+            <li>поиск в интернете.</li>
+          </ul></dd>
+          <dt>Бесплатно</dt>
+          <dd>Да, с лимитом.</dd>
+          <dt><span class="conn-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 2v5M15 2v5"/><path d="M6 7h12v4a6 6 0 0 1-12 0z"/><path d="M12 17v5"/></svg>Коннекторы</span></dt>
+          <dd>Есть: Google Диск, GitHub и другие. Настройки → Приложения.</dd>
+        </dl>
+      </article>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw-gpt-1"><span class="box"></span><span class="txt">После урока 3 подключите GitHub и спросите: «Какие файлы лежат в моём репозитории tetrad?»</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+
+      <!-- Claude -->
+      <article class="ai" id="claude">
+        <header class="ai-head"><h3>Claude</h3><span class="kind">чат · документы и код</span></header>
+        <span class="tri tri-yes"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>нужен инструмент из трёх букв</span>
+        <dl class="rows">
+          <dt>Что это</dt>
+          <dd>Нейросеть для длинных текстов, документов и кода. Напрямую из России официально не работает, для регистрации нужен номер телефона другой страны.</dd>
+          <dt>Где взять</dt>
+          <dd><a class="get" href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a>, есть приложение для компьютера и телефона.</dd>
+          <dt>Что умеет</dt>
+          <dd><ul>
+            <li>длинные тексты и документы;</li>
+            <li>разбор файлов;</li>
+            <li>код. Для работы с файлами и кодом на компьютере есть Claude Code — это следующий уровень, после тетради.</li>
+          </ul></dd>
+          <dt>Бесплатно</dt>
+          <dd>Да, с лимитом. Лимит обновляется через несколько часов.</dd>
+          <dt><span class="conn-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 2v5M15 2v5"/><path d="M6 7h12v4a6 6 0 0 1-12 0z"/><path d="M12 17v5"/></svg>Коннекторы</span></dt>
+          <dd>Есть: GitHub, Google Диск, почта. Раздел «Коннекторы».</dd>
+        </dl>
+      </article>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw-cl-1"><span class="box"></span><span class="txt">Загрузите свой документ и попросите: «Найди, чего здесь не хватает клиенту, чтобы принять решение».</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+    </section>
+
+    <!-- ================= УРОК 3 ================= -->
+    <section class="lesson" id="urok-3" aria-labelledby="h-3">
+      <p class="kicker"><span>Урок 3</span> · Классная работа</p>
+      <h2 id="h-3">GitHub</h2>
+
+      <p><a href="https://github.com" target="_blank" rel="noopener">GitHub</a> — бесплатное хранилище для ваших файлов в интернете. Похоже на Google Диск, но с двумя отличиями:</p>
+      <ul>
+        <li>GitHub помнит каждую версию файла, и всегда можно вернуться к тому, что было вчера;</li>
+        <li>из файлов можно бесплатно сделать сайт (урок 5).</li>
+      </ul>
+      <p>Нейросети хорошо понимают GitHub. Подключили коннектор — и чат читает ваши промты, тексты и код прямо оттуда.</p>
+
+      <h3>Слова, которые встретятся</h3>
+      <dl class="words">
+        <dt>Репозиторий</dt><dd>папка проекта (repository, repo)</dd>
+        <dt>README.md</dt><dd>главная страница папки, GitHub показывает её первой</dd>
+        <dt>.md</dt><dd>текстовый файл: <code>#</code> перед строкой делает заголовок, <code>-</code> делает пункт списка</dd>
+        <dt>Commit</dt><dd>«сохранить изменения», каждый коммит — одна версия</dd>
+        <dt>Public / Private</dt><dd>открытая папка (видят все) или закрытая (видите только вы)</dd>
+      </dl>
+
+      <h3>Шаг 1. Регистрация</h3>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw-gh1-1"><span class="box"></span><span class="txt">Зайдите на github.com → Sign up.</span></label></li>
+          <li><label><input type="checkbox" id="hw-gh1-2"><span class="box"></span><span class="txt">Введите почту, пароль и имя пользователя. Имя станет частью адреса вашего сайта, выбирайте короткое.</span></label></li>
+          <li><label><input type="checkbox" id="hw-gh1-3"><span class="box"></span><span class="txt">Подтвердите почту.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+
+      <h3>Шаг 2. Создать папку</h3>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw-gh2-1"><span class="box"></span><span class="txt">Справа вверху нажмите «+» → New repository.</span></label></li>
+          <li><label><input type="checkbox" id="hw-gh2-2"><span class="box"></span><span class="txt">Repository name — название латиницей без пробелов, например <code>tetrad</code>.</span></label></li>
+          <li><label><input type="checkbox" id="hw-gh2-3"><span class="box"></span><span class="txt">Выберите Public, если хотите показывать, или Private, если только для себя.</span></label></li>
+          <li><label><input type="checkbox" id="hw-gh2-4"><span class="box"></span><span class="txt">Поставьте галочку Add a README file.</span></label></li>
+          <li><label><input type="checkbox" id="hw-gh2-5"><span class="box"></span><span class="txt">Нажмите Create repository.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+
+      <h3>Шаг 3. Положить файл</h3>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw-gh3-1"><span class="box"></span><span class="txt">В папке нажмите Add file → Upload files.</span></label></li>
+          <li><label><input type="checkbox" id="hw-gh3-2"><span class="box"></span><span class="txt">Перетащите файл в окно.</span></label></li>
+          <li><label><input type="checkbox" id="hw-gh3-3"><span class="box"></span><span class="txt">Внизу нажмите Commit changes.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+      <p>Создать файл прямо на сайте: Add file → Create new file → имя файла, например <code>prompt-post.md</code> → вставить текст → Commit changes.</p>
+      <p>Исправить файл: открыть файл → значок карандаша → исправить → Commit changes.</p>
+
+      <h3>Шаг 4. Подключить GitHub к нейросети</h3>
+      <div class="conn">
+        <svg class="plug" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 2v5M15 2v5"/><path d="M6 7h12v4a6 6 0 0 1-12 0z"/><path d="M12 17v5"/></svg>
+        <p><span class="conn-word">Коннектор GitHub</span> есть у Genspark, Qwen, ChatGPT и Claude. Подключается так же, как в уроке 1.</p>
+      </div>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw-gh4-1"><span class="box"></span><span class="txt">Откройте нейросеть с коннектором GitHub.</span></label></li>
+          <li><label><input type="checkbox" id="hw-gh4-2"><span class="box"></span><span class="txt">Найдите в настройках коннекторы → GitHub → Подключить.</span></label></li>
+          <li><label><input type="checkbox" id="hw-gh4-3"><span class="box"></span><span class="txt">GitHub спросит разрешение → Authorize.</span></label></li>
+          <li><label><input type="checkbox" id="hw-gh4-4"><span class="box"></span><span class="txt">GitHub предложит дать доступ ко всем папкам или к выбранным. Для начала выберите одну.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+
+      <h3>Шаг 5. Как давать команды</h3>
+      <p>Называйте папку и файл точно, как они написаны на GitHub.</p>
+      <div class="copy">
+        <div class="copy-head"><span class="tag-copy">Скопируй</span><button class="copy-btn" type="button" data-copy="c-gh">Скопировать</button></div>
+<pre id="c-gh">Открой мой репозиторий tetrad и перечисли, какие там файлы.
+
+Прочитай README.md в tetrad и сделай из него пост для ВК до 800 знаков.
+
+Возьми файл prompt-post.md из tetrad и напиши по нему пост про мою услугу: [услуга].
+
+Сравни два файла в tetrad и скажи, чем они отличаются.</pre>
+      </div>
+      <div class="remember">
+        <span class="tag-remember">Запомни!</span>
+        <p>Через коннектор в обычном чате нейросеть чаще всего только читает файлы. Чтобы она сама сохраняла их в GitHub, нужны инструменты для кода: Claude Code, Codex, Qwen Code. Это следующий уровень.</p>
+        <p>Пока делайте так: попросите «сделай файл README.md с этим текстом», скачайте файл и загрузите на GitHub (шаг 3).</p>
+      </div>
+    </section>
+
+    <!-- ================= УРОК 4 ================= -->
+    <section class="lesson" id="urok-4" aria-labelledby="h-4">
+      <p class="kicker"><span>Урок 4</span> · Классная работа</p>
+      <h2 id="h-4">Практика</h2>
+
+      <h3>Документ или презентация</h3>
+      <p>Где делать: Genspark (AI Docs, AI Slides, AI Sheets), Claude, ChatGPT.</p>
+      <div class="copy">
+        <div class="copy-head"><span class="tag-copy">Скопируй</span><button class="copy-btn" type="button" data-copy="c-doc">Скопировать</button></div>
+<pre id="c-doc">Сделай документ «Прайс на мои услуги». Услуги: [список с ценами]. Для кого: [кто клиенты]. Структура: что я делаю, как проходит работа, что получает клиент, сколько стоит. Простым языком.</pre>
+      </div>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw-doc-1"><span class="box"></span><span class="txt">Сделайте прайс или презентацию о себе.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+
+      <h3>Видео</h3>
+      <p>Где делать: Qwen (ролики около 5 секунд), Алиса AI (оживить фото).</p>
+      <ol>
+        <li>Сначала картинка — это первый кадр.</li>
+        <li>Потом движение. Опишите, что двигается и как. Одно действие на один ролик.</li>
+        <li>Камера: «камера медленно приближается» или «камера стоит на месте».</li>
+      </ol>
+      <div class="copy">
+        <div class="copy-head"><span class="tag-copy">Скопируй</span><button class="copy-btn" type="button" data-copy="c-vid">Скопировать</button></div>
+<pre id="c-vid">Оживи картинку: пар поднимается от чашки, занавеска чуть колышется, камера стоит на месте.</pre>
+      </div>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw-vid-1"><span class="box"></span><span class="txt">Сделайте ролик из фото своего товара или рабочего места.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+
+      <h3>Мультик</h3>
+      <p>Бесплатные ролики короткие, поэтому мультик собирается из кусочков по 5 секунд.</p>
+      <ol>
+        <li><b>Сюжет</b> — DeepSeek или Алиса, промт ниже.</li>
+        <li><b>Герой</b> — Qwen. Нарисуйте героя один раз. Потом для каждой сцены загружайте эту картинку и пишите: «этот же герой, но [что происходит в сцене]». Так герой останется одинаковым.</li>
+        <li><b>Кадры</b> — Qwen, по картинке на сцену.</li>
+        <li><b>Движение</b> — видео в Qwen или «оживить фото» в Алисе.</li>
+        <li><b>Сборка</b> — любой видеоредактор на телефоне: ролики по порядку, голос, музыка.</li>
+      </ol>
+      <div class="copy">
+        <div class="copy-head"><span class="tag-copy">Скопируй</span><button class="copy-btn" type="button" data-copy="c-mult">Скопировать</button></div>
+<pre id="c-mult">Придумай мультик на 30 секунд про [тема]. Разбей на 6 сцен по 5 секунд. Для каждой сцены напиши: что видно, что происходит, какая фраза звучит.</pre>
+      </div>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw-mult-1"><span class="box"></span><span class="txt">Сделайте мультик из 3 сцен.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+
+      <h3>Промт</h3>
+      <p>Промт — это задание для нейросети. Чем понятнее задание, тем ближе результат к тому, что вы хотели.</p>
+      <div class="remember">
+        <span class="tag-remember">Запомни!</span>
+        <p class="formula">кто ты → что сделать → для кого → что я даю → каким должен быть результат → чего не делать</p>
+      </div>
+      <div class="copy">
+        <div class="copy-head"><span class="tag-copy">Скопируй</span><button class="copy-btn" type="button" data-copy="c-prompt">Скопировать</button></div>
+<pre id="c-prompt">Ты — редактор. Напиши пост для ВК о моей услуге: [услуга]. Читатели — [кто]. Вот что я о них знаю: [2–3 факта]. Длина — до 1000 знаков, простые слова, в конце одна просьба: написать мне в личные сообщения. Не используй слова «уникальный», «лучший», «инновационный».</pre>
+      </div>
+      <p>Если результат не тот, не начинайте заново, а уточняйте в том же чате:</p>
+      <ul>
+        <li>«Короче в два раза».</li>
+        <li>«Проще, как будто объясняешь соседке».</li>
+        <li>«Оставь второй абзац, остальное перепиши».</li>
+      </ul>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw-pr-1"><span class="box"></span><span class="txt">Напишите по формуле свой промт.</span></label></li>
+          <li><label><input type="checkbox" id="hw-pr-2"><span class="box"></span><span class="txt">Сохраните его на GitHub в файл <code>prompts.md</code>.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+    </section>
+
+    <!-- ================= УРОК 5 ================= -->
+    <section class="lesson" id="urok-5" aria-labelledby="h-5">
+      <p class="kicker"><span>Урок 5</span> · Классная работа</p>
+      <h2 id="h-5">Сайт на GitHub бесплатно</h2>
+      <p>Из открытой папки GitHub бесплатно делает сайт. Это называется GitHub Pages. Подходит для тетради, портфолио, визитки, страницы с вашими промтами.</p>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw-pg-1"><span class="box"></span><span class="txt">Проверьте, что папка Public.</span></label></li>
+          <li><label><input type="checkbox" id="hw-pg-2"><span class="box"></span><span class="txt">Вверху папки нажмите Settings → слева Pages.</span></label></li>
+          <li><label><input type="checkbox" id="hw-pg-3"><span class="box"></span><span class="txt">Source: Deploy from a branch.</span></label></li>
+          <li><label><input type="checkbox" id="hw-pg-4"><span class="box"></span><span class="txt">Branch: main, папка / (root) → Save.</span></label></li>
+          <li><label><input type="checkbox" id="hw-pg-5"><span class="box"></span><span class="txt">Подождите несколько минут и обновите страницу. Сверху появится адрес: <code>https://ИМЯ.github.io/ПАПКА/</code></span></label></li>
+          <li><label><input type="checkbox" id="hw-pg-6"><span class="box"></span><span class="txt">Сохраните визитку из урока 2 (задание про Qwen) как <code>index.html</code> и загрузите в папку.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+      <div class="remember">
+        <span class="tag-remember">Запомни!</span>
+        <p>Если в папке есть файл <code>index.html</code>, сайтом станет он. Если нет — README.md.</p>
+      </div>
+    </section>
+
+    <!-- ================= УРОК 6 ================= -->
+    <section class="lesson" id="urok-6" aria-labelledby="h-6">
+      <p class="kicker"><span>Урок 6</span> · Классная работа</p>
+      <h2 id="h-6">Работа над ошибками</h2>
+      <div class="fix">
+        <div class="fix-h">Что случилось</div><div class="fix-h">Что делать</div>
+        <div class="err">Сайт не открывается</div><div>Попробуйте другой браузер. Если не помогло — инструмент из трёх букв.</div>
+        <div class="err">«Лимит исчерпан»</div><div>Перейдите в другой сервис из тетради или вернитесь завтра.</div>
+        <div class="err">Не нахожу кнопку</div><div>Кнопки в сервисах часто переезжают. Сделайте скриншот, загрузите его в любую нейросеть и спросите: «Где здесь коннекторы?» или «Куда нажать, чтобы сделать видео?»</div>
+        <div class="err">Результат не тот</div><div>Уточняйте в том же чате, а не начинайте новый: нейросеть помнит, о чём вы говорили.</div>
+        <div class="err">Нет кнопки видео в Qwen</div><div>На вашем аккаунте её пока не включили. Оживите фото в Алисе.</div>
+      </div>
+    </section>
+
+    <!-- ================= УРОК 7 ================= -->
+    <section class="lesson" id="urok-7" aria-labelledby="h-7">
+      <p class="kicker"><span>Урок 7</span> · Классная работа</p>
+      <h2 id="h-7">Тетрадь-проводник</h2>
+      <p>Скопируйте этот промт в любую нейросеть: DeepSeek, Алису, Qwen, ChatGPT, Claude. Она проведёт вас по тетради шаг за шагом и подождёт, пока вы сделаете задание.</p>
+      <div class="copy">
+        <div class="copy-head"><span class="tag-copy">Скопируй</span><button class="copy-btn" type="button" data-copy="c-guide">Скопировать</button></div>
+<pre id="c-guide">Ты — спокойный наставник для человека, который впервые работает с нейросетями. Веди меня по «Тетради по нейросетям» шаг за шагом.
+
+Как работать со мной:
+- Давай один шаг за раз. Не пиши следующий шаг, пока я не напишу «готово».
+- Пиши коротко: что сделать, куда нажать, что я должен увидеть после этого.
+- Простые слова. Если без термина не обойтись, объясни его в одну строку.
+- Если я пишу «не получается», попроси скриншот или описание того, что я вижу на экране, и помоги найти нужную кнопку.
+- Не хвали за каждое действие и не пиши длинных вступлений.
+- Если не знаешь, где кнопка в конкретном сервисе, так и скажи и предложи поискать в настройках разделы «Коннекторы», «Интеграции», «Приложения».
+- Ничего не выдумывай: ни функции сервисов, ни цены, ни лимиты. Если не уверен, скажи, что это надо проверить на сайте.
+- Если сервис не открывается из России напрямую, называй это «нужен инструмент из трёх букв».
+
+Уроки тетради:
+1. Коннектор: что это и как подключить.
+2. Семь нейросетей: Sider, Genspark, Qwen, DeepSeek, Алиса AI, ChatGPT, Claude. По каждой: что это, где взять, что умеет, одно задание.
+3. GitHub: регистрация, папка, файл, подключение к нейросети, команды.
+4. Практика: документ, видео, мультик, промт.
+5. Сайт на GitHub бесплатно.
+6. Работа над ошибками.
+
+Когда я сделал все задания урока, поставь мне пятёрку и предложи следующий урок.
+
+Начни так: спроси, какая у меня цель (тексты, картинки, видео, сайт или всё понемногу) и с чего я работаю — с компьютера или телефона. Потом предложи, с какого урока начать, и дай первый шаг.</pre>
+      </div>
+
+      <h3>Чтобы проводник знал саму тетрадь</h3>
+      <ol>
+        <li>Вставьте тетрадь в чат: после промта вставьте текст из README.md и напишите «Вот тетрадь, веди по ней».</li>
+        <li>Или подключите коннектор GitHub (Genspark, Qwen, ChatGPT, Claude) и добавьте в начало промта: «Тетрадь лежит в репозитории [ваше имя на GitHub]/tetrad, файл README.md. Читай её оттуда».</li>
+      </ol>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw-guide-1"><span class="box"></span><span class="txt">Скопируйте промт в любую нейросеть и пройдите с ней первый урок.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+
+      <p class="note">Кнопки и лимиты в сервисах меняются. Если на экране не так, как в тетради, верьте экрану и спросите нейросеть по скриншоту.</p>
+    </section>
+
+  </main>
+</div>
+
+<script>
+(function(){
+  document.documentElement.lang = 'ru';
+
+  // Дата прописью, как в школьной тетради
+  var days = ['первое','второе','третье','четвёртое','пятое','шестое','седьмое','восьмое','девятое','десятое',
+    'одиннадцатое','двенадцатое','тринадцатое','четырнадцатое','пятнадцатое','шестнадцатое','семнадцатое','восемнадцатое','девятнадцатое','двадцатое',
+    'двадцать первое','двадцать второе','двадцать третье','двадцать четвёртое','двадцать пятое','двадцать шестое','двадцать седьмое','двадцать восьмое','двадцать девятое','тридцатое','тридцать первое'];
+  var months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  try{
+    var d = new Date();
+    var t = days[d.getDate()-1] + ' ' + months[d.getMonth()];
+    document.getElementById('today').textContent = t.charAt(0).toUpperCase() + t.slice(1);
+  }catch(e){}
+
+  // Имя на обложке
+  var KEY_NAME = 'tetrad-name';
+  var nameInput = document.getElementById('student-name');
+  try{ var saved = localStorage.getItem(KEY_NAME); if(saved) nameInput.value = saved; }catch(e){}
+  nameInput.addEventListener('input', function(){ try{ localStorage.setItem(KEY_NAME, nameInput.value); }catch(e){} });
+
+  // Домашняя работа и пятёрки
+  var KEY = 'tetrad-progress-v1';
+  var state = {};
+  try{ state = JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ state = {}; }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+
+  var hws = Array.prototype.slice.call(document.querySelectorAll('.hw'));
+  document.getElementById('total').textContent = hws.length;
+
+  function update(){
+    var fives = 0;
+    hws.forEach(function(hw){
+      var boxes = hw.querySelectorAll('input[type=checkbox]');
+      var n = 0;
+      Array.prototype.forEach.call(boxes, function(b){ if(b.checked) n++; });
+      var c = hw.querySelector('.hw-count');
+      if(c) c.textContent = n + ' из ' + boxes.length;
+      var done = boxes.length > 0 && n === boxes.length;
+      hw.classList.toggle('done', done);
+      if(done) fives++;
+    });
+    document.getElementById('fives').textContent = fives;
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.hw input[type=checkbox]'), function(b){
+    if(state[b.id]) b.checked = true;
+    b.addEventListener('change', function(){ state[b.id] = b.checked; save(); update(); });
+  });
+  update();
+
+  // Кнопки «Скопировать»
+  Array.prototype.forEach.call(document.querySelectorAll('[data-copy]'), function(btn){
+    btn.addEventListener('click', function(){
+      var pre = document.getElementById(btn.getAttribute('data-copy'));
+      var text = pre.textContent;
+      function ok(){ btn.textContent = 'Скопировано'; setTimeout(function(){ btn.textContent = 'Скопировать'; }, 1800); }
+      function fail(){
+        try{
+          var r = document.createRange(); r.selectNodeContents(pre);
+          var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        }catch(e){}
+        btn.textContent = 'Выделено — скопируйте';
+        setTimeout(function(){ btn.textContent = 'Скопировать'; }, 2600);
+      }
+      try{
+        if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(ok, fail); }
+        else fail();
+      }catch(e){ fail(); }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
