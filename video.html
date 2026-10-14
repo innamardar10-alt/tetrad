@@ -1,0 +1,959 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Тетрадь «Видео и мультики»</title>
+<meta name="description" content="Рабочая тетрадь для начинающих: нейросети для видео, говорящих аватаров и музыки, формула описания сцены и как склеить ролики.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Mono&family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<style>
+/* Layout: школьная тетрадь — зелёная обложка с наклейкой, лист в линейку с красными полями справа,
+   одинаковые блоки-вклейки; синим пишет ученик, красным — учитель (задания, пятёрки на полях) */
+:root{
+  --line:32px;
+  --fields:76px;
+  --desk:#e6ebf1;
+  --paper:#fbfcfe;
+  --ink:#1d2939;
+  --ink-soft:#5b6679;
+  --rule:#d3e2f2;
+  --rule-strong:#a9c4e2;
+  --margin:#e5918f;
+  --red:#c2372c;
+  --blue:#21509f;
+  --ok:#2b7457;
+  --cover:#2f6b56;
+  --cover-deep:#255a48;
+  --cover-tex:rgba(255,255,255,.06);
+  --cover-ink:#eef4ee;
+  --label-bg:#f7f9f5;
+  --label-ink:#1d2939;
+  --label-pen:#21509f;
+  --sticker:#ffffff;
+  --sticker-edge:#dbe3ec;
+  --sage:#e8f1eb;
+  --sage-edge:#5f8f79;
+  --shadow:0 1px 2px rgba(29,41,57,.08),0 12px 26px -16px rgba(29,41,57,.38);
+  --f-display:"PT Serif",Georgia,"Times New Roman",serif;
+  --f-body:"PT Sans","Segoe UI",Roboto,Arial,sans-serif;
+  --f-mono:"PT Mono",Consolas,"Courier New",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --desk:#0f141b; --paper:#17202b; --ink:#e3e9f1; --ink-soft:#9eabbd;
+    --rule:#223247; --rule-strong:#34507a; --margin:#8a4447;
+    --red:#ff8a7e; --blue:#9cbcff; --ok:#7fd1aa;
+    --cover:#275c4a; --cover-deep:#1f4a3b; --cover-tex:rgba(255,255,255,.05); --cover-ink:#e8efe9;
+    --sticker:#1d2734; --sticker-edge:#2c3a4c; --sage:#1b2d27; --sage-edge:#6fae93;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 26px -16px rgba(0,0,0,.75);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --desk:#0f141b; --paper:#17202b; --ink:#e3e9f1; --ink-soft:#9eabbd;
+  --rule:#223247; --rule-strong:#34507a; --margin:#8a4447;
+  --red:#ff8a7e; --blue:#9cbcff; --ok:#7fd1aa;
+  --cover:#275c4a; --cover-deep:#1f4a3b; --cover-tex:rgba(255,255,255,.05); --cover-ink:#e8efe9;
+  --sticker:#1d2734; --sticker-edge:#2c3a4c; --sage:#1b2d27; --sage-edge:#6fae93;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 26px -16px rgba(0,0,0,.75);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{background:var(--desk);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:var(--line);-webkit-font-smoothing:antialiased}
+a{color:var(--blue);text-decoration-thickness:1px;text-underline-offset:3px}
+a:hover{text-decoration-thickness:2px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:2px}
+code{font-family:var(--f-mono);font-size:.92em;background:var(--sage);padding:1px 5px;border-radius:3px}
+
+.wrap{max-width:920px;margin:0 auto;padding-inline:16px;padding-block:24px 56px;display:grid;grid-template-columns:minmax(0,1fr);gap:28px}
+
+/* ---------- Обложка ---------- */
+.cover{position:relative;overflow:hidden;background-color:var(--cover);
+  background-image:repeating-linear-gradient(135deg,var(--cover-tex) 0 2px,transparent 2px 9px);
+  color:var(--cover-ink);border-radius:6px 16px 16px 6px;box-shadow:var(--shadow);
+  padding-block:44px 28px;padding-inline:36px 24px;display:grid;grid-template-columns:minmax(0,1fr);gap:28px;justify-items:center}
+.cover::before{content:"";position:absolute;inset:0 auto 0 0;width:22px;background:var(--cover-deep)}
+.label{background:var(--label-bg);color:var(--label-ink);width:min(100%,460px);min-width:0;border-radius:6px;
+  padding:6px;box-shadow:0 2px 0 var(--cover-deep)}
+.label-in{border:3px double var(--cover);border-radius:4px;padding:22px 22px 18px;display:grid;gap:4px;text-align:center}
+.label-title{font-family:var(--f-display);font-weight:700;font-size:clamp(34px,8vw,46px);line-height:1.15;letter-spacing:.2em;margin:0 0 8px;padding-left:.2em}
+.label-row{display:flex;align-items:baseline;gap:10px;font-size:16px;line-height:34px;text-align:left}
+.label-row .fill{flex:1;min-width:0;border-bottom:1.5px solid var(--label-ink);color:var(--label-pen);
+  font-family:var(--f-display);font-style:italic;font-size:19px;padding-inline:6px;text-align:center}
+.label-row input.fill{width:100%;background:transparent;border-top:0;border-left:0;border-right:0;outline-offset:4px;font:inherit;font-family:var(--f-display);font-style:italic;font-size:19px;color:var(--label-pen);height:34px}
+.label-row input.fill::placeholder{color:#8a93a3;font-style:italic}
+.label-foot{margin-top:12px;font-size:14px;line-height:1.4;color:#5b6679}
+.cover-foot{font-size:13px;letter-spacing:.14em;text-transform:uppercase;line-height:1.4;opacity:.9}
+
+/* ---------- Лист ---------- */
+.page{position:relative;background-color:var(--paper);
+  background-image:
+    linear-gradient(to left,transparent 0 var(--fields),var(--margin) var(--fields) calc(var(--fields) + 2px),transparent calc(var(--fields) + 2px)),
+    repeating-linear-gradient(to bottom,transparent 0 calc(var(--line) - 1px),var(--rule) calc(var(--line) - 1px) var(--line));
+  border-radius:4px;box-shadow:var(--shadow);min-width:0;
+  padding-block:var(--line) calc(var(--line) * 2);
+  padding-left:48px;padding-right:calc(var(--fields) + 28px)}
+.page > *{max-width:68ch}
+.page p{margin:0 0 var(--line)}
+.page ul,.page ol{margin:0 0 var(--line);padding-left:1.4em}
+.page li{line-height:var(--line)}
+.page li::marker{color:var(--ink-soft)}
+
+.today{text-align:center;color:var(--blue);font-family:var(--f-display);font-style:italic;font-size:20px;margin:0}
+.today + .today{margin-bottom:var(--line)}
+
+/* косая линейка — только в заголовке тетради */
+.propis{max-width:none;margin-bottom:var(--line);padding:16px 18px;border-radius:3px;background-color:var(--paper);
+  background-image:
+    repeating-linear-gradient(115deg,transparent 0 26px,var(--rule) 26px 27px),
+    repeating-linear-gradient(to bottom,transparent 0 19px,var(--rule-strong) 19px 20px,transparent 20px 31px,var(--rule) 31px 32px,transparent 32px 43px,var(--rule-strong) 43px 44px,transparent 44px 64px)}
+.propis h1{font-family:var(--f-display);font-weight:700;font-size:clamp(32px,6vw,50px);line-height:1.25;margin:0;text-wrap:balance;letter-spacing:-.005em}
+.propis p{margin:8px 0 0;font-size:18px;color:var(--ink-soft);line-height:1.5}
+
+.lead{font-size:19px}
+.progress{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;margin:0 0 var(--line)}
+.progress b{font-family:var(--f-display);font-style:italic;color:var(--red);font-size:24px;font-variant-numeric:tabular-nums}
+
+h2{font-family:var(--f-display);font-weight:700;font-size:32px;line-height:var(--line);margin:0 0 var(--line);text-wrap:balance;padding-top:8px}
+h3{font-family:var(--f-display);font-weight:700;font-size:22px;line-height:var(--line);margin:var(--line) 0 0;text-wrap:balance}
+h3 + p,h3 + ol,h3 + ul{margin-top:0}
+
+.kicker{margin:0;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
+.kicker span{color:var(--blue)}
+
+.lesson{padding-top:calc(var(--line) * 2);scroll-margin-top:16px}
+.lesson-intro{scroll-margin-top:16px}
+
+/* ---------- Условные обозначения ---------- */
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:0 0 var(--line);max-width:none}
+.legend > div{background:var(--sticker);border:1px solid var(--sticker-edge);border-radius:6px;padding:14px 16px;display:grid;gap:10px;align-content:start;min-width:0}
+.legend p{margin:0;font-size:15px;line-height:1.5;color:var(--ink-soft)}
+.mini{justify-self:start}
+
+/* ---------- Содержание ---------- */
+.toc{list-style:none;padding:0;margin:0 0 var(--line)}
+.toc li{line-height:var(--line)}
+.toc a{display:flex;align-items:baseline;gap:8px;color:var(--ink);text-decoration:none}
+.toc a:hover .toc-name{text-decoration:underline;text-underline-offset:3px}
+.toc .lead-dots{flex:1;min-width:12px;border-bottom:2px dotted var(--ink-soft);transform:translateY(-7px);opacity:.6}
+.toc .toc-num{color:var(--blue);font-family:var(--f-display);font-style:italic;white-space:nowrap}
+
+/* ---------- Блок «Запомни» ---------- */
+.remember{background:var(--sage);border:1.5px solid var(--sage-edge);border-radius:4px;padding:12px 18px 14px;margin:0 0 var(--line);line-height:1.55}
+.remember p{margin:0}
+.remember p + p{margin-top:8px}
+.tag-remember{display:inline-block;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--sage-edge);margin-bottom:4px}
+.formula{font-family:var(--f-display);font-size:19px;font-weight:700}
+
+/* ---------- Блок «Коннектор» ---------- */
+.conn{display:grid;grid-template-columns:40px minmax(0,1fr);gap:14px;align-items:start;margin:0 0 var(--line)}
+.conn p{margin:0}
+.plug{width:40px;height:40px;color:var(--blue);margin-top:-4px}
+.conn-word{font-weight:700;color:var(--blue);text-decoration:underline wavy var(--blue);text-decoration-thickness:1.5px;text-underline-offset:5px}
+.conn-mark{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.conn-mark svg{width:20px;height:20px;color:var(--blue);flex:none}
+
+/* ---------- Домашняя работа ---------- */
+.hw{position:relative;margin:0 0 var(--line)}
+.hw-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px}
+.hw-title{font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--red);text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:5px}
+.hw-count{font-size:14px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.checks{list-style:none;padding:0 !important;margin:0 !important}
+.checks li{line-height:var(--line)}
+.checks label{display:grid;grid-template-columns:22px minmax(0,1fr);gap:12px;cursor:pointer}
+.checks input{position:absolute;opacity:0;width:22px;height:22px;margin:0}
+.box{width:20px;height:20px;margin-top:6px;border:1.5px solid var(--ink-soft);border-radius:3px;background:var(--paper);position:relative}
+.checks input:checked + .box{border-color:var(--blue)}
+.checks input:checked + .box::after{content:"";position:absolute;left:5px;top:0;width:6px;height:12px;border-right:2.5px solid var(--blue);border-bottom:2.5px solid var(--blue);transform:rotate(42deg)}
+.checks input:focus-visible + .box{outline:2px solid var(--blue);outline-offset:2px}
+.checks input:checked ~ .txt{color:var(--ink-soft)}
+.grade{position:absolute;top:-4px;right:calc(-1 * (var(--fields) + 28px));width:var(--fields);text-align:center;
+  font-family:var(--f-display);font-style:italic;font-weight:700;font-size:44px;line-height:1;color:var(--red);
+  opacity:0;transform:scale(.4) rotate(-10deg);transition:opacity .25s ease,transform .35s cubic-bezier(.2,1.6,.4,1);pointer-events:none}
+.hw.done .grade{opacity:1;transform:scale(1) rotate(-10deg)}
+
+/* ---------- Скопируй ---------- */
+.copy{border:1.5px dashed var(--ink-soft);border-radius:4px;background:var(--sticker);margin:0 0 var(--line);min-width:0}
+.copy-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:6px 8px 6px 14px;border-bottom:1.5px dashed var(--sticker-edge)}
+.tag-copy{font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--blue)}
+.copy-btn{font:700 14px/1 var(--f-body);background:var(--blue);color:var(--paper);border:0;border-radius:3px;padding:9px 14px;cursor:pointer;white-space:nowrap}
+.copy-btn:hover{filter:brightness(1.08)}
+.copy pre{margin:0;padding:12px 14px 14px;font-family:var(--f-mono);font-size:15px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ink)}
+
+/* ---------- Инструмент из трёх букв ---------- */
+.tri{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:13.5px;line-height:1.3;padding:4px 11px 4px 8px;border-radius:999px;border:1.5px solid currentColor}
+.tri .dots{display:inline-flex;gap:2px}
+.tri .dots i{width:5px;height:5px;border-radius:50%;background:currentColor}
+.tri-no{color:var(--ok)}
+.tri-yes{color:var(--red)}
+.tri-maybe{color:var(--ink-soft);border-style:dashed}
+
+/* ---------- Карточка нейросети (вклейка) ---------- */
+.ai{background:var(--sticker);border:1px solid var(--sticker-edge);border-radius:6px;box-shadow:var(--shadow);
+  padding:20px 22px 22px;margin:var(--line) 0 18px;max-width:none;line-height:1.55;min-width:0}
+.ai-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px;border-bottom:1.5px solid var(--sticker-edge);padding-bottom:10px}
+.ai h3{margin:0;font-size:30px;line-height:1.15}
+.kind{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-soft);font-weight:700}
+.ai .tri{margin-top:12px}
+.rows{display:grid;grid-template-columns:8.6em minmax(0,1fr);gap:10px 18px;margin:14px 0 0}
+.rows dt{font-weight:700;color:var(--ink-soft);font-size:15px;padding-top:1px}
+.rows dd{margin:0;min-width:0}
+.rows ul{margin:0;padding-left:1.15em}
+.rows li{line-height:1.55}
+.rows li + li{margin-top:2px}
+.get{font-weight:700}
+
+/* ---------- Таблица ---------- */
+.tbl{overflow-x:auto;margin:0 0 var(--line);max-width:none}
+table{border-collapse:collapse;background:var(--sticker);min-width:520px;width:100%;font-size:15.5px;line-height:1.45}
+th,td{border:1px solid var(--rule-strong);padding:8px 12px;text-align:left;vertical-align:top}
+th{font-weight:700;color:var(--ink-soft);font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+td.yes{color:var(--ok);font-weight:700}
+td.no{color:var(--ink-soft)}
+
+/* ---------- Словарик ---------- */
+.words{display:grid;grid-template-columns:minmax(0,11em) minmax(0,1fr);gap:0 18px;margin:0 0 var(--line)}
+.words dt{font-weight:700;line-height:var(--line)}
+.words dd{margin:0;line-height:var(--line)}
+
+/* ---------- Работа над ошибками ---------- */
+.fix{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);margin:0 0 var(--line);max-width:none}
+.fix > div{padding:8px 0;border-bottom:1px solid var(--rule-strong);line-height:1.55}
+.fix .fix-h{font-size:13px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--ink-soft)}
+.fix .err{color:var(--red);font-weight:700;padding-right:16px}
+
+.note{font-size:15px;color:var(--ink-soft);line-height:1.55;border-top:1px solid var(--rule-strong);padding-top:14px;margin-top:calc(var(--line) * 2) !important}
+
+@media (max-width:640px){
+  :root{--fields:42px}
+  body{font-size:16px}
+  .page{padding-left:16px;padding-right:calc(var(--fields) + 12px)}
+  .grade{right:calc(-1 * (var(--fields) + 12px));font-size:30px}
+  .rows{grid-template-columns:minmax(0,1fr);gap:2px 0}
+  .rows dd{margin-bottom:10px}
+  .words{grid-template-columns:minmax(0,1fr)}
+  .words dd{margin-bottom:8px;line-height:1.5}
+  .fix{grid-template-columns:minmax(0,1fr)}
+  .fix .fix-h:nth-child(2){display:none}
+  .fix .err{border-bottom:0;padding-bottom:0}
+  .cover{padding-block:28px 22px;padding-inline:30px 14px}
+  .cover::before{width:16px}
+  .label-in{padding:16px 12px 14px}
+  .label-title{font-size:clamp(26px,9vw,34px);letter-spacing:.12em;padding-left:.12em}
+  .label-row{gap:8px;font-size:15px}
+  .label-row .fill,.label-row input.fill{font-size:17px}
+  .ai{padding:16px 16px 18px}
+  .ai h3{font-size:26px}
+  .conn{grid-template-columns:30px minmax(0,1fr);gap:10px}
+  .plug{width:30px;height:30px}
+  h2{font-size:27px}
+}
+@media (prefers-reduced-motion:reduce){
+  .grade{transition:none}
+}
+
+/* ---------- Тетрадь № 2: синяя обложка, метки цены, значки по смыслу ---------- */
+:root{
+  --cover:#2f4f86; --cover-deep:#263f6c;
+  --warn:#86580a; --warn-bg:#f6e9c8; --ok-bg:#dcefe2; --red-bg:#f7dedb;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --cover:#2a4676; --cover-deep:#213960; --warn:#f0c567; --warn-bg:#382c12; --ok-bg:#173226; --red-bg:#3b1b1b; }
+}
+:root[data-theme="dark"]{ --cover:#2a4676; --cover-deep:#213960; --warn:#f0c567; --warn-bg:#382c12; --ok-bg:#173226; --red-bg:#3b1b1b; }
+
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.price{display:inline-flex;align-items:center;font-weight:700;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;line-height:1.3;padding:4px 11px;border-radius:999px;white-space:nowrap}
+.price.free{background:var(--ok-bg);color:var(--ok)}
+.price.try{background:var(--warn-bg);color:var(--warn)}
+.price.paid{background:var(--red-bg);color:var(--red)}
+.ai-tags{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}
+.ai .ai-tags .tri{margin-top:0}
+.ico{width:18px;height:18px;vertical-align:-3px;margin-right:6px;color:var(--blue);flex:none}
+.kind .ico{color:var(--ink-soft)}
+td .ico{color:var(--ink-soft)}
+td:first-child a{font-weight:700;white-space:nowrap}
+.tags-legend{display:grid;gap:10px;margin:0 0 var(--line)}
+.tags-legend p{margin:0;line-height:1.5;display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
+.page .cam{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 var(--line);padding:0;list-style:none}
+.cam li{background:var(--sticker);border:1px solid var(--sticker-edge);border-radius:999px;padding:2px 12px;line-height:1.6;font-size:15.5px}
+.steps-title{font-weight:700;margin:0}
+.series{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline}
+</style>
+<style>body{margin:0}</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="cover">
+    <div class="label">
+      <div class="label-in">
+        <p class="label-title">ТЕТРАДЬ</p>
+        <div class="label-row"><span>для работ по</span><span class="fill">видео и мультикам</span></div>
+        <div class="label-row"><label for="student-name">ученика(цы)</label><input class="fill" id="student-name" type="text" placeholder="впишите имя" autocomplete="off"></div>
+        <div class="label-row"><span>уровень</span><span class="fill">начинающий</span></div>
+        <p class="label-foot">Нейросети для видео, говорящих аватаров и музыки</p>
+      </div>
+    </div>
+    <p class="cover-foot">в линейку · тетрадь № 2 · 7 уроков</p>
+  </header>
+
+  <main class="page">
+
+    <p class="today" id="today">Пятнадцатое октября</p>
+    <p class="today">Классная работа</p>
+
+    <div class="propis">
+      <h1>Видео и мультики</h1>
+      <p>Тетрадь № 2 для тех, кто начинает</p>
+    </div>
+
+    <p class="lead">Тринадцать сервисов для видео, говорящих аватаров и музыки. Для каждого: сколько бесплатно, для чего лучше, где слабее и в чём подвох. Плюс формула описания сцены и как склеить ролики в фильм.</p>
+    <p>Нейросеть здесь помощник. Дело ведёте вы.</p>
+
+    <p class="progress"><span>Пятёрок на полях:</span><b id="fives">0</b><span>из</span><b id="total">0</b></p>
+
+      <div class="remember">
+        <span class="tag-remember">Запомни!</span>
+        <p>Почти на всех бесплатных роликах водяной знак, и брать их в рекламу и продажи обычно нельзя. Для проб и для себя бесплатного хватает.</p>
+      </div>
+
+    <section class="lesson-intro" aria-labelledby="h-legend">
+      <h2 id="h-legend">Условные обозначения</h2>
+      <p>Блоки такие же, как в первой тетради. Новые здесь только метки цены.</p>
+      <div class="legend">
+        <div>
+          <div class="remember mini" style="margin:0;padding:6px 12px"><span class="tag-remember" style="margin:0">Запомни!</span></div>
+          <p>Правило. Его стоит выучить, оно пригодится везде.</p>
+        </div>
+        <div>
+          <span class="mini"><span class="price free">бесплатно</span></span>
+          <p>Метка цены. Ещё бывают «попробовать» и «платно».</p>
+        </div>
+        <div>
+          <span class="mini hw-title">Домашняя работа</span>
+          <p>Задания с галочками. Сделали все в блоке — на полях пятёрка.</p>
+        </div>
+        <div>
+          <span class="mini tag-copy" style="border:1.5px dashed var(--ink-soft);border-radius:4px;padding:4px 10px">Скопируй</span>
+          <p>Готовый текст для нейросети. Кнопка «Скопировать» рядом.</p>
+        </div>
+        <div>
+          <span class="mini tri tri-maybe"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>инструмент из трёх букв</span>
+          <p>Если сайт не открывается из России, включите его.</p>
+        </div>
+        <div>
+          <span class="mini" style="font-family:var(--f-display);font-weight:700;font-size:20px;line-height:1.3;border:1px solid var(--sticker-edge);border-radius:6px;padding:4px 12px;box-shadow:var(--shadow)">Карточка</span>
+          <p>Вклейка про один сервис. У всех тринадцати одинаковые строки.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="lesson-intro" aria-labelledby="h-toc">
+      <h2 id="h-toc">Содержание</h2>
+      <ol class="toc">
+        <li><a href="#urok-1"><span class="toc-name">Шпаргалка и что выбрать</span><span class="lead-dots"></span><span class="toc-num">урок 1</span></a></li>
+        <li><a href="#urok-2"><span class="toc-name">Формула сцены</span><span class="lead-dots"></span><span class="toc-num">урок 2</span></a></li>
+        <li><a href="#urok-3"><span class="toc-name">Видео из текста или картинки</span><span class="lead-dots"></span><span class="toc-num">урок 3</span></a></li>
+        <li><a href="#urok-4"><span class="toc-name">Говорящий человек</span><span class="lead-dots"></span><span class="toc-num">урок 4</span></a></li>
+        <li><a href="#urok-5"><span class="toc-name">Музыка для ролика</span><span class="lead-dots"></span><span class="toc-num">урок 5</span></a></li>
+        <li><a href="#urok-6"><span class="toc-name">Склеить ролики и наложить песню</span><span class="lead-dots"></span><span class="toc-num">урок 6</span></a></li>
+        <li><a href="#urok-7"><span class="toc-name">Платные сервисы</span><span class="lead-dots"></span><span class="toc-num">урок 7</span></a></li>
+      </ol>
+    </section>
+
+    <section class="lesson" id="urok-1" aria-labelledby="h-1">
+      <p class="kicker"><span>Урок 1</span> · Классная работа</p>
+      <h2 id="h-1">Шпаргалка и что выбрать</h2>
+      <p>Здесь все сервисы тетради на одной странице. Нажмите на название, откроется сайт. Подробная карточка про каждый ниже, в своём уроке.</p>
+      <h3>Три метки</h3>
+      <div class="tags-legend">
+        <p><span class="price free">бесплатно</span><span>пользуетесь постоянно, но с лимитом</span></p>
+        <p><span class="price try">попробовать</span><span>бесплатно только разово или по акциям</span></p>
+        <p><span class="price paid">платно</span><span>сразу за деньги</span></p>
+      </div>
+      <h3>Шпаргалка</h3>
+      <div class="tbl">
+        <table>
+          <thead><tr><th scope="col">Сервис</th><th scope="col">Цена</th><th scope="col">Сколько бесплатно</th><th scope="col">Лучше всего для</th></tr></thead>
+          <tbody>
+            <tr><td><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="M15.5 10.5l6-3.5v10l-6-3.5z"/></svg><a href="https://chat.qwen.ai" target="_blank" rel="noopener">Qwen</a></td><td><span class="price free">бесплатно</span></td><td>дневной лимит, точное число не пишут</td><td>бесплатные пробы, живые сцены</td></tr>
+            <tr><td><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="M15.5 10.5l6-3.5v10l-6-3.5z"/></svg><a href="https://dream-machine.lumalabs.ai" target="_blank" rel="noopener">Luma Dream Machine</a></td><td><span class="price free">бесплатно</span></td><td>около 30 роликов в месяц</td><td>движение камеры, показ товара</td></tr>
+            <tr><td><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="M15.5 10.5l6-3.5v10l-6-3.5z"/></svg><a href="https://kling.ai" target="_blank" rel="noopener">Kling</a></td><td><span class="price try">попробовать</span></td><td>кредиты по акциям, не каждый день</td><td>реалистичные люди, ролик с ведущим</td></tr>
+            <tr><td><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="M15.5 10.5l6-3.5v10l-6-3.5z"/></svg><a href="https://hailuoai.video" target="_blank" rel="noopener">Hailuo</a></td><td><span class="price try">попробовать</span></td><td>200 кредитов разово, около 8 роликов за 3 дня</td><td>настроение, красивые заставки</td></tr>
+            <tr><td><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v10H10l-5 4v-4H4z"/><path d="M8 9.5h8M8 12h5" stroke-linecap="round"/></svg><a href="https://huggingface.co/spaces/victor/LongCat-Video-Avatar-1.5" target="_blank" rel="noopener">LongCat Avatar 1.5</a></td><td><span class="price free">бесплатно</span></td><td>бесплатная демка, бывает очередь</td><td>говорите вы, своим голосом</td></tr>
+            <tr><td><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v10H10l-5 4v-4H4z"/><path d="M8 9.5h8M8 12h5" stroke-linecap="round"/></svg><a href="https://app.heygen.com" target="_blank" rel="noopener">HeyGen</a></td><td><span class="price free">бесплатно</span></td><td>3 ролика в месяц, до минуты</td><td>аватар читает ваш текст</td></tr>
+            <tr><td><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></svg><a href="https://suno.com" target="_blank" rel="noopener">Suno</a></td><td><span class="price free">бесплатно</span></td><td>50 кредитов в день, около 10 песен</td><td>песня на ваши стихи</td></tr>
+            <tr><td><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></svg><a href="https://www.flowmusic.app" target="_blank" rel="noopener">FlowMusic</a></td><td><span class="price free">бесплатно</span></td><td>кредиты каждый день, без карты</td><td>песня и клип к ней</td></tr>
+            <tr><td><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg><a href="https://speakly.ai" target="_blank" rel="noopener">Speakly</a></td><td><span class="price free">бесплатно</span></td><td>4000 слов в неделю</td><td>описание сцены голосом</td></tr>
+            <tr><td><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5"/></svg><a href="https://most-ai.com" target="_blank" rel="noopener">most-AI</a></td><td><span class="price try">попробовать</span></td><td>на сайте не написано</td><td>оплата рублями</td></tr>
+            <tr><td><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5"/></svg><a href="https://fal.ai" target="_blank" rel="noopener">fal.ai</a></td><td><span class="price paid">платно</span></td><td>нет, от $0,01 за секунду</td><td>новые модели за копейки</td></tr>
+            <tr><td><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5"/></svg><a href="https://higgsfield.ai" target="_blank" rel="noopener">Higgsfield</a></td><td><span class="price try">попробовать</span></td><td>разово 100 кредитов</td><td>эффекты для соцсетей</td></tr>
+            <tr><td><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5"/></svg><a href="https://www.atlascloud.ai" target="_blank" rel="noopener">Atlas Cloud</a></td><td><span class="price paid">платно</span></td><td>нет, пополнение от $10</td><td>тем, кто пишет код</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>Что выбрать</h3>
+      <dl class="words">
+        <dt>Попробовать и не платить</dt>
+        <dd><a href="#qwen">Qwen</a></dd>
+        <dt>Мультик в своём стиле: нарисуйте кадр сами и оживите его</dt>
+        <dd><a href="#qwen">Qwen</a> или <a href="#kling">Kling</a></dd>
+        <dt>Заставка с настроением</dt>
+        <dd><a href="#hailuo">Hailuo</a> или <a href="#luma">Luma</a></dd>
+        <dt>Реалистичный человек, ролик с ведущим</dt>
+        <dd><a href="#kling">Kling</a></dd>
+        <dt>Говорите вы, своим голосом</dt>
+        <dd><a href="#longcat">LongCat</a></dd>
+        <dt>Аватар читает ваш текст</dt>
+        <dd><a href="#heygen">HeyGen</a></dd>
+        <dt>Песня на свои стихи</dt>
+        <dd><a href="#suno">Suno</a> или <a href="#flowmusic">FlowMusic</a></dd>
+        <dt>Клип к песне</dt>
+        <dd><a href="#flowmusic">FlowMusic</a></dd>
+        <dt>Описание сцены голосом</dt>
+        <dd><a href="#speakly">Speakly</a></dd>
+        <dt>Платить рублями</dt>
+        <dd><a href="#most">most-AI</a></dd>
+      </dl>
+      <h3>Словарик</h3>
+      <dl class="words">
+        <dt>Промпт</dt><dd>описание сцены для нейросети</dd>
+        <dt>Кредиты</dt><dd>монетки внутри сервиса, за каждый ролик списывается часть</dd>
+        <dt>Водяной знак</dt><dd>логотип сервиса поверх видео</dd>
+        <dt>Видео из картинки</dt><dd>нейросеть оживляет вашу готовую картинку</dd>
+        <dt>Коммерческое использование</dt><dd>реклама, продажи, работа на заказ</dd>
+      </dl>
+      <div class="remember">
+        <span class="tag-remember">Запомни!</span>
+        <p>Цифры в этой тетради проверены 15 октября 2026 года. Бесплатные лимиты меняются часто. Если сайт пишет по-другому, верьте сайту.</p>
+      </div>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw2-1-1"><span class="box"></span><span class="txt">Откройте шпаргалку и выберите один сервис под свою задачу.</span></label></li>
+          <li><label><input type="checkbox" id="hw2-1-2"><span class="box"></span><span class="txt">Откройте его сайт по ссылке и зарегистрируйтесь.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+    </section>
+
+    <section class="lesson" id="urok-2" aria-labelledby="h-2">
+      <p class="kicker"><span>Урок 2</span> · Классная работа</p>
+      <h2 id="h-2">Формула сцены</h2>
+      <p>Нейросеть делает то, что вы описали. Чем точнее описание, тем меньше пустых попыток и потраченных кредитов. Одна формула подходит для всех сервисов из тетради.</p>
+      <div class="remember">
+        <span class="tag-remember">Запомни!</span>
+        <p class="formula">Кто + что делает + где + камера + стиль и свет</p>
+      </div>
+      <h3>Правила</h3>
+      <ul>
+        <li>Одно действие на ролик. Больше трёх действий подряд нейросеть путает.</li>
+        <li>У движения есть конец: «…и садится на скамейку». Без конца ролик чаще ломается.</li>
+        <li>Всегда пишите, как движется камера. Без этого ролик выходит застывшим.</li>
+        <li>Место — 3–5 деталей. Длинный список предметов путает.</li>
+        <li>Описание — примерно 30–60 слов. Короче выходит расплывчато, длиннее 100 слов нейросеть путается.</li>
+        <li>Видео из картинки: картинку заново не описывайте. Пишите, что двигается, как и что стоит на месте. Хватит 15–40 слов.</li>
+      </ul>
+      <h3>Как писать про камеру</h3>
+      <ul class="cam">
+        <li>камера стоит неподвижно</li>
+        <li>медленно приближается</li>
+        <li>медленно отъезжает</li>
+        <li>едет сбоку за героем</li>
+        <li>облетает вокруг</li>
+        <li>поднимается вверх</li>
+      </ul>
+      <div class="copy">
+        <div class="copy-head"><span class="tag-copy">Скопируй · шаблон сцены</span><button class="copy-btn" type="button" data-copy="copy2-1">Скопировать</button></div>
+        <pre id="copy2-1">Кто: [герой, как он выглядит]
+Что делает: [одно действие и чем оно заканчивается]
+Где: [место, 3–5 деталей]
+Камера: [как движется]
+Стиль и свет: [мультфильм, акварель, пластилин; утро, вечер, солнце]</pre>
+      </div>
+      <div class="copy">
+        <div class="copy-head"><span class="tag-copy">Скопируй · шаблон для видео из картинки</span><button class="copy-btn" type="button" data-copy="copy2-2">Скопировать</button></div>
+        <pre id="copy2-2">Что двигается: [кто или что и как]
+Что стоит на месте: [фон, предметы]
+Камера: [стоит или как движется]
+Конец движения: [чем всё заканчивается]</pre>
+      </div>
+      <h3>Три примера для мультика</h3>
+      <div class="copy">
+        <div class="copy-head"><span class="tag-copy">Скопируй · котёнок</span><button class="copy-btn" type="button" data-copy="copy2-3">Скопировать</button></div>
+        <pre id="copy2-3">Маленький рыжий котёнок в синем шарфе прыгает через лужу, приземляется на лапы и отряхивается. Осенний двор, жёлтые листья, скамейка, фонарь. Камера медленно едет сбоку за котёнком. Мягкий мультяшный стиль, акварель, тёплый вечерний свет.</pre>
+      </div>
+      <div class="copy">
+        <div class="copy-head"><span class="tag-copy">Скопируй · ёжик</span><button class="copy-btn" type="button" data-copy="copy2-4">Скопировать</button></div>
+        <pre id="copy2-4">Ёжик в красной шапке поливает из лейки маленький подсолнух. Подсолнух распускается, ёжик улыбается. Огород у деревянного домика, грядки, забор. Камера плавно приближается к ёжику. Стиль пластилинового мультфильма, яркий солнечный день.</pre>
+      </div>
+      <div class="copy">
+        <div class="copy-head"><span class="tag-copy">Скопируй · ваша картинка оживает</span><button class="copy-btn" type="button" data-copy="copy2-5">Скопировать</button></div>
+        <pre id="copy2-5">Девочка на картинке машет рукой и улыбается, потом опускает руку. Дом и деревья остаются на месте, облака медленно плывут. Камера стоит неподвижно. Движение заканчивается на улыбке.</pre>
+      </div>
+      <p>Если сервис плохо понимает по-русски, попросите любую нейросеть перевести описание на английский и вставьте перевод.</p>
+      <h3>Работа над ошибками</h3>
+      <div class="fix">
+        <div class="fix-h">Ошибка</div><div class="fix-h">Как правильно</div>
+        <div class="err">«Человек идёт по улице»</div><div>Кто именно: «бабушка в зелёном пальто идёт с корзиной яблок»</div>
+        <div class="err">Три действия в одном ролике</div><div>Одно действие на ролик, остальное в следующий ролик</div>
+        <div class="err">Нет ни слова про камеру</div><div>Допишите: «камера медленно едет за героем»</div>
+        <div class="err">Движение без конца</div><div>Допишите, чем закончилось: «и садится на скамейку»</div>
+        <div class="err">В видео из картинки заново описана картинка</div><div>Пишите только, что двигается и что стоит на месте</div>
+        <div class="err">Длинный список предметов в фоне</div><div>Оставьте 3–5 главных</div>
+        <div class="err">Крупный план пальцев</div><div>Средний план: руки в кадре, но не во весь экран</div>
+      </div>
+      <h3>Помощник: описание голосом</h3>
+      <article class="ai" id="speakly">
+        <header class="ai-head"><h3>Speakly</h3><span class="kind"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>текст с голоса</span></header>
+        <div class="ai-tags"><span class="price free">бесплатно</span><span class="tri tri-maybe"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>если не открывается — инструмент из трёх букв</span></div>
+        <dl class="rows">
+          <dt>Что это</dt>
+          <dd>Голосовой ввод от Genspark. Говорите, он печатает чистый текст в любом приложении и сам убирает «э-э» и оговорки.</dd>
+          <dt>Где взять</dt>
+          <dd><a class="get" href="https://speakly.ai" target="_blank" rel="noopener">Скачать Speakly</a><br>Есть для Windows, Mac, iPhone и Android.</dd>
+          <dt>Бесплатно</dt>
+          <dd>4000 слов в неделю.</dd>
+          <dt>Лучше всего для</dt>
+          <dd>Надиктовать сценарий и описание сцены, когда печатать долго.</dd>
+          <dt>Слабее всего</dt>
+          <dd>Видео сам не делает.</dd>
+          <dt>Подвох</dt>
+          <dd>Программу нужно поставить на компьютер или телефон.</dd>
+        </dl>
+      </article>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw2-2-1"><span class="box"></span><span class="txt">Скопируйте шаблон сцены и заполните его для своего героя.</span></label></li>
+          <li><label><input type="checkbox" id="hw2-2-2"><span class="box"></span><span class="txt">Надиктуйте описание в Speakly или напишите руками.</span></label></li>
+          <li><label><input type="checkbox" id="hw2-2-3"><span class="box"></span><span class="txt">Проверьте по работе над ошибками: одно действие, есть камера, есть конец движения.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+    </section>
+
+    <section class="lesson" id="urok-3" aria-labelledby="h-3">
+      <p class="kicker"><span>Урок 3</span> · Классная работа</p>
+      <h2 id="h-3">Видео из текста или картинки</h2>
+      <p>Пишете, что должно происходить в кадре, или загружаете картинку. Получаете ролик на 5–6 секунд. Порядок карточек от самого щедрого к самому скупому.</p>
+      <article class="ai" id="qwen">
+        <header class="ai-head"><h3>Qwen</h3><span class="kind"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="M15.5 10.5l6-3.5v10l-6-3.5z"/></svg>видео из текста и картинки</span></header>
+        <div class="ai-tags"><span class="price free">бесплатно</span><span class="tri tri-maybe"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>если не открывается — инструмент из трёх букв</span></div>
+        <dl class="rows">
+          <dt>Что это</dt>
+          <dd>Чат-нейросеть от Alibaba. Видео в нём делает модель Wan: короткий ролик по описанию или из вашей картинки.</dd>
+          <dt>Где взять</dt>
+          <dd><a class="get" href="https://chat.qwen.ai" target="_blank" rel="noopener">Открыть Qwen</a><br>Сайт chat.qwen.ai, вход через почту.</dd>
+          <dt>Бесплатно</dt>
+          <dd>Да, без подписки и без карты. Дневной лимит есть, но сколько роликов в день, сайт заранее не пишет.</dd>
+          <dt>Лучше всего для</dt>
+          <dd>Первые пробы без денег. Wan хорошо справляется с живыми сценами с движением: вода, огонь, спорт.</dd>
+          <dt>Слабее всего</dt>
+          <dd>Лица и кожа у Wan хуже, чем у Kling и Hailuo. На большом экране картинка мягкая.</dd>
+          <dt>Подвох</dt>
+          <dd>Ролик около 5 секунд.</dd>
+        </dl>
+      </article>
+      <article class="ai" id="luma">
+        <header class="ai-head"><h3>Luma Dream Machine</h3><span class="kind"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="M15.5 10.5l6-3.5v10l-6-3.5z"/></svg>видео из текста и картинки</span></header>
+        <div class="ai-tags"><span class="price free">бесплатно</span><span class="tri tri-maybe"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>если не открывается — инструмент из трёх букв</span></div>
+        <dl class="rows">
+          <dt>Что это</dt>
+          <dd>Видео из текста и картинки от компании Luma.</dd>
+          <dt>Где взять</dt>
+          <dd><a class="get" href="https://dream-machine.lumalabs.ai" target="_blank" rel="noopener">Открыть Dream Machine</a><br>Бесплатный тариф остался только в Dream Machine. Новая версия Luma Agents стоит от $30 в месяц.</dd>
+          <dt>Бесплатно</dt>
+          <dd>Около 30 роликов в месяц, по 5 секунд, качество 720p, без звука.</dd>
+          <dt>Лучше всего для</dt>
+          <dd>Красивое движение камеры: медленный наезд, облёт вокруг предмета, спокойный длинный кадр. Заставка, показ товара.</dd>
+          <dt>Слабее всего</dt>
+          <dd>Людей, движение и цвет другие сервисы из тетради делают лучше.</dd>
+          <dt>Подвох</dt>
+          <dd>Водяной знак, только для личного использования.</dd>
+        </dl>
+      </article>
+      <article class="ai" id="kling">
+        <header class="ai-head"><h3>Kling</h3><span class="kind"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="M15.5 10.5l6-3.5v10l-6-3.5z"/></svg>видео из текста и картинки</span></header>
+        <div class="ai-tags"><span class="price try">попробовать</span><span class="tri tri-maybe"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>если не открывается — инструмент из трёх букв</span></div>
+        <dl class="rows">
+          <dt>Что это</dt>
+          <dd>Видео из текста и картинки от китайской компании Kuaishou. Есть режим со звуком.</dd>
+          <dt>Где взять</dt>
+          <dd><a class="get" href="https://kling.ai" target="_blank" rel="noopener">Открыть Kling</a><br>Сайт kling.ai, старый адрес klingai.com ведёт туда же.</dd>
+          <dt>Бесплатно</dt>
+          <dd>Тариф Basic бесплатный. Кредиты дают по акциям. Раньше давали 66 кредитов каждый день, сейчас это не обещают.</dd>
+          <dt>Лучше всего для</dt>
+          <dd>Реалистичные люди: естественные движения, лицо остаётся тем же весь ролик. Портрет, человек в кадре, показ товара с ведущим.</dd>
+          <dt>Слабее всего</dt>
+          <dd>Повороты головы, движение губ и человек, идущий на камеру.</dd>
+          <dt>Подвох</dt>
+          <dd>Водяной знак. Вечером очередь бывает дольше 10 минут.</dd>
+        </dl>
+      </article>
+      <article class="ai" id="hailuo">
+        <header class="ai-head"><h3>Hailuo</h3><span class="kind"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="M15.5 10.5l6-3.5v10l-6-3.5z"/></svg>видео из текста и картинки</span></header>
+        <div class="ai-tags"><span class="price try">попробовать</span><span class="tri tri-maybe"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>если не открывается — инструмент из трёх букв</span></div>
+        <dl class="rows">
+          <dt>Что это</dt>
+          <dd>Видео на 6 секунд из текста или картинки от китайской компании MiniMax.</dd>
+          <dt>Где взять</dt>
+          <dd><a class="get" href="https://hailuoai.video" target="_blank" rel="noopener">Открыть Hailuo</a><br>Сайт hailuoai.video.</dd>
+          <dt>Бесплатно</dt>
+          <dd>При регистрации один раз дают 200 кредитов, это около 8 роликов. Они сгорают через 3 дня, каждый день не пополняются.</dd>
+          <dt>Лучше всего для</dt>
+          <dd>Кинематографичный цвет, настроение, плавные движения камеры. Заставки и атмосферные кадры.</dd>
+          <dt>Слабее всего</dt>
+          <dd>Точные движения и крупный портрет одного человека. Из сильных моделей самый дорогой за ролик.</dd>
+          <dt>Подвох</dt>
+          <dd>Водяной знак. Для рекламы и продаж бесплатные ролики не годятся.</dd>
+        </dl>
+      </article>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw2-3-1"><span class="box"></span><span class="txt">Сделайте в Qwen ролик по своему описанию из урока 2.</span></label></li>
+          <li><label><input type="checkbox" id="hw2-3-2"><span class="box"></span><span class="txt">Сделайте ролик из своей картинки: напишите только, что двигается.</span></label></li>
+          <li><label><input type="checkbox" id="hw2-3-3"><span class="box"></span><span class="txt">Повторите то же описание в Luma и сравните, какой ролик нравится больше.</span></label></li>
+          <li><label><input type="checkbox" id="hw2-3-4"><span class="box"></span><span class="txt">Зайдите в Kling и посмотрите, сколько кредитов начислили сегодня.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+    </section>
+
+    <section class="lesson" id="urok-4" aria-labelledby="h-4">
+      <p class="kicker"><span>Урок 4</span> · Классная работа</p>
+      <h2 id="h-4">Говорящий человек</h2>
+      <p>Фото или аватар, который произносит ваш текст или говорит вашим голосом. Подходит для приветствия, объяснения и ролика к объявлению.</p>
+      <article class="ai" id="longcat">
+        <header class="ai-head"><h3>LongCat Avatar 1.5</h3><span class="kind"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v10H10l-5 4v-4H4z"/><path d="M8 9.5h8M8 12h5" stroke-linecap="round"/></svg>говорящее видео из фото и голоса</span></header>
+        <div class="ai-tags"><span class="price free">бесплатно</span><span class="tri tri-maybe"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>если не открывается — инструмент из трёх букв</span></div>
+        <dl class="rows">
+          <dt>Что это</dt>
+          <dd>Открытая модель компании Meituan. Загружаете портрет и запись голоса, получаете видео, где человек говорит.</dd>
+          <dt>Где взять</dt>
+          <dd><a class="get" href="https://huggingface.co/spaces/victor/LongCat-Video-Avatar-1.5" target="_blank" rel="noopener">Открыть демку на Hugging Face</a><br>Демка на сайте Hugging Face, ничего устанавливать не нужно.</dd>
+          <dt>Бесплатно</dt>
+          <dd>Да, демка работает на общих видеокартах.</dd>
+          <dt>Лучше всего для</dt>
+          <dd>Говорящий человек под ваш голос: губы попадают в звук, лицо остаётся похожим. Эксперту, который хочет говорить с людьми и не сниматься.</dd>
+          <dt>Слабее всего</dt>
+          <dd>Работает медленно. Делает только говорящего человека, сюжетов и сцен не делает.</dd>
+          <dt>Подвох</dt>
+          <dd>Бывает очередь, иногда демка спит, тогда зайдите позже. На обычный ноутбук не установить, ей нужна очень мощная видеокарта.</dd>
+        </dl>
+      </article>
+      <article class="ai" id="heygen">
+        <header class="ai-head"><h3>HeyGen</h3><span class="kind"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v10H10l-5 4v-4H4z"/><path d="M8 9.5h8M8 12h5" stroke-linecap="round"/></svg>говорящий аватар по тексту</span></header>
+        <div class="ai-tags"><span class="price free">бесплатно</span><span class="tri tri-maybe"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>если не открывается — инструмент из трёх букв</span></div>
+        <dl class="rows">
+          <dt>Что это</dt>
+          <dd>Говорящий аватар по тексту. Пишете текст, аватар его произносит.</dd>
+          <dt>Где взять</dt>
+          <dd><a class="get" href="https://app.heygen.com" target="_blank" rel="noopener">Открыть HeyGen</a><br>Сайт app.heygen.com.</dd>
+          <dt>Бесплатно</dt>
+          <dd>До 3 роликов в месяц, каждый до минуты.</dd>
+          <dt>Лучше всего для</dt>
+          <dd>Обучающие ролики, объяснения, приветствие. Больше 500 готовых аватаров и больше 30 языков.</dd>
+          <dt>Слабее всего</dt>
+          <dd>Это человек в кадре, который говорит. Сюжета и сцен не будет.</dd>
+          <dt>Подвох</dt>
+          <dd>Водяной знак. Можно ли брать бесплатные ролики в рекламу, сервис прямо не пишет.</dd>
+        </dl>
+      </article>
+      <div class="remember">
+        <span class="tag-remember">Запомни!</span>
+        <p>Загружайте своё лицо и свой голос. Чужие — только с разрешения человека.</p>
+      </div>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw2-4-1"><span class="box"></span><span class="txt">Запишите на телефон 10–20 секунд своего голоса в тихой комнате.</span></label></li>
+          <li><label><input type="checkbox" id="hw2-4-2"><span class="box"></span><span class="txt">Сделайте фото лицом в камеру при хорошем свете.</span></label></li>
+          <li><label><input type="checkbox" id="hw2-4-3"><span class="box"></span><span class="txt">Загрузите фото и голос в демку LongCat. Получите видео, где говорите вы.</span></label></li>
+          <li><label><input type="checkbox" id="hw2-4-4"><span class="box"></span><span class="txt">В HeyGen посмотрите предпросмотр с готовым аватаром, бесплатный ролик он не тратит.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+    </section>
+
+    <section class="lesson" id="urok-5" aria-labelledby="h-5">
+      <p class="kicker"><span>Урок 5</span> · Классная работа</p>
+      <h2 id="h-5">Музыка для ролика</h2>
+      <p>Песня по описанию или по вашим стихам, с голосом и музыкой. Подойдёт как фон для ролика.</p>
+      <article class="ai" id="suno">
+        <header class="ai-head"><h3>Suno</h3><span class="kind"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></svg>песня по описанию или стихам</span></header>
+        <div class="ai-tags"><span class="price free">бесплатно</span><span class="tri tri-maybe"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>если не открывается — инструмент из трёх букв</span></div>
+        <dl class="rows">
+          <dt>Что это</dt>
+          <dd>Песня целиком: музыка, вокал, аранжировка. Можно вставить свои стихи.</dd>
+          <dt>Где взять</dt>
+          <dd><a class="get" href="https://suno.com" target="_blank" rel="noopener">Открыть Suno</a><br>Сайт suno.com.</dd>
+          <dt>Бесплатно</dt>
+          <dd>50 кредитов каждый день. По словам Suno, этого хватает примерно на 10 песен. Кредиты не копятся.</dd>
+          <dt>Лучше всего для</dt>
+          <dd>Песня на ваши стихи, фон для ролика.</dd>
+          <dt>Слабее всего</dt>
+          <dd>Бесплатно доступна не самая новая модель, песня около 2 минут.</dd>
+          <dt>Подвох</dt>
+          <dd>Песню с бесплатного тарифа нельзя продавать, выпускать через дистрибьютора и брать в работу на заказ. Если потом оплатить подписку, старые песни разрешения не получат.</dd>
+        </dl>
+      </article>
+      <article class="ai" id="flowmusic">
+        <header class="ai-head"><h3>FlowMusic</h3><span class="kind"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></svg>песня и клип к ней</span></header>
+        <div class="ai-tags"><span class="price free">бесплатно</span><span class="tri tri-maybe"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>если не открывается — инструмент из трёх букв</span></div>
+        <dl class="rows">
+          <dt>Что это</dt>
+          <dd>Музыкальный сервис Google на модели Lyria 3. Песня с голосом и музыкой, ремикс своего трека, клип к песне на видеомодели Veo.</dd>
+          <dt>Где взять</dt>
+          <dd><a class="get" href="https://www.flowmusic.app" target="_blank" rel="noopener">Открыть FlowMusic</a><br>Сайт flowmusic.app.</dd>
+          <dt>Бесплатно</dt>
+          <dd>Без карты, кредиты каждый день. В мае 2026 года давали 500 кредитов в день. Скачивание без ограничений.</dd>
+          <dt>Лучше всего для</dt>
+          <dd>Песня и клип к ней в одном месте.</dd>
+          <dt>Слабее всего</dt>
+          <dd>Песня не длиннее 3 минут.</dd>
+          <dt>Подвох</dt>
+          <dd>В каждый трек встроена невидимая метка Google. Можно ли продавать песни с бесплатного тарифа, сервис прямо не пишет. Перед выпуском проверьте условия.</dd>
+        </dl>
+      </article>
+      <h3>Suno или FlowMusic</h3>
+      <div class="tbl">
+        <table>
+          <thead><tr><th scope="col"></th><th scope="col">Suno</th><th scope="col">FlowMusic</th></tr></thead>
+          <tbody>
+            <tr><td>Чей сервис</td><td>отдельная компания Suno</td><td>Google</td></tr>
+            <tr><td>Бесплатно</td><td>50 кредитов в день, около 10 песен</td><td>кредиты каждый день, в мае давали 500</td></tr>
+            <tr><td>Длина песни</td><td>около 2 минут</td><td>до 3 минут</td></tr>
+            <tr><td>Модель</td><td>не самая новая</td><td>Lyria 3</td></tr>
+            <tr><td>Клип к песне</td><td>нет</td><td>есть, на модели Veo</td></tr>
+            <tr><td>Скачивание</td><td>есть</td><td>без ограничений</td></tr>
+            <tr><td>Продавать песни с бесплатного тарифа</td><td>нельзя</td><td>условия прямо не написаны</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Нужна песня на свои стихи — начните с Suno. Нужна песня и сразу клип — FlowMusic.</p>
+      <div class="remember">
+        <span class="tag-remember">Запомни!</span>
+        <p>Песню, которую хотите выпустить или продавать, делайте на платном тарифе. Разрешение задним числом старым песням не выдают.</p>
+      </div>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw2-5-1"><span class="box"></span><span class="txt">Напишите четыре строчки о себе или о своём деле.</span></label></li>
+          <li><label><input type="checkbox" id="hw2-5-2"><span class="box"></span><span class="txt">Сделайте из них песню в Suno.</span></label></li>
+          <li><label><input type="checkbox" id="hw2-5-3"><span class="box"></span><span class="txt">Опишите ту же песню словами в FlowMusic и сравните.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+    </section>
+
+    <section class="lesson" id="urok-6" aria-labelledby="h-6">
+      <p class="kicker"><span>Урок 6</span> · Классная работа</p>
+      <h2 id="h-6">Склеить ролики и наложить песню</h2>
+      <p>Почти все сервисы делают ролики по 5–6 секунд. Фильм собирают из нескольких таких кусков, а сверху кладут песню. Всё делается на телефоне бесплатно.</p>
+      <h3>iPhone: iMovie</h3>
+      <p>Бесплатное приложение Apple, обычно уже стоит на телефоне. Если нет, скачайте из App Store.</p>
+      <ol>
+        <li>Откройте iMovie, нажмите «Начать новый проект», затем «Фильм».</li>
+        <li>Отметьте ролики в том порядке, в каком они пойдут в фильме, и нажмите «Создать фильм».</li>
+        <li>Нажмите «+», выберите «Аудио и музыка» и добавьте свою песню из «Файлов».</li>
+        <li>Нажмите «Готово», затем значок «Поделиться» и «Сохранить видео».</li>
+      </ol>
+      <h3>Android и iPhone: CapCut</h3>
+      <p>Ставится из Google Play, App Store или RuStore. Большая часть функций бесплатная. Сайт CapCut из России может не открываться, поэтому ставьте приложение из магазина.</p>
+      <ol>
+        <li>Нажмите «Новый проект», отметьте ролики по порядку и нажмите «Добавить».</li>
+        <li>Внизу нажмите «Аудио» и добавьте свою песню из памяти телефона.</li>
+        <li>Потяните край песни, чтобы она закончилась вместе с видео.</li>
+        <li>Вверху нажмите «Экспорт».</li>
+      </ol>
+      <p>Названия кнопок в вашей версии могут немного отличаться.</p>
+      <h3>Ролик для ВКонтакте</h3>
+      <p>Если ролик пойдёт в ВК, музыку можно поставить прямо при публикации клипа, из библиотеки ВК. Эту музыку площадка разрешает, ролик не заблокируют.</p>
+      <div class="remember">
+        <span class="tag-remember">Запомни!</span>
+        <p>Своя песня из Suno или FlowMusic с бесплатного тарифа годится для своих роликов. Для рекламы и продаж нужен платный тариф.</p>
+      </div>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw2-6-1"><span class="box"></span><span class="txt">Скачайте на телефон три своих ролика из уроков 3 и 4.</span></label></li>
+          <li><label><input type="checkbox" id="hw2-6-2"><span class="box"></span><span class="txt">Склейте их в iMovie или CapCut.</span></label></li>
+          <li><label><input type="checkbox" id="hw2-6-3"><span class="box"></span><span class="txt">Наложите песню из урока 5 и сохраните видео.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+    </section>
+
+    <section class="lesson" id="urok-7" aria-labelledby="h-7">
+      <p class="kicker"><span>Урок 7</span> · Классная работа</p>
+      <h2 id="h-7">Платные сервисы</h2>
+      <p>Бесплатно здесь только попробовать или ничего. Записаны, потому что про них часто спрашивают.</p>
+      <article class="ai" id="most">
+        <header class="ai-head"><h3>most-AI</h3><span class="kind"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5"/></svg>много моделей за рубли</span></header>
+        <div class="ai-tags"><span class="price try">попробовать</span><span class="tri tri-no"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>работает без инструмента из трёх букв</span></div>
+        <dl class="rows">
+          <dt>Что это</dt>
+          <dd>Российская витрина нейросетей: больше 80 моделей в одном кабинете. Видео: Kling, Veo, Seedance, Sora. Музыка: Suno. Есть картинки, голос и чат.</dd>
+          <dt>Где взять</dt>
+          <dd><a class="get" href="https://most-ai.com" target="_blank" rel="noopener">Открыть most-AI</a><br>Сайт most-ai.com.</dd>
+          <dt>Бесплатно</dt>
+          <dd>Кнопка «Попробовать бесплатно» есть, но сколько дают, на сайте не написано. Дальше платите за каждый ролик с баланса в рублях, без подписки.</dd>
+          <dt>Лучше всего для</dt>
+          <dd>Тем, у кого нет зарубежной карты.</dd>
+          <dt>Слабее всего</dt>
+          <dd>Цены за ролик видно только после входа.</dd>
+          <dt>Подвох</dt>
+          <dd>Это посредник: те же модели, но через свой кабинет и по своим ценам. Сравните цену с бесплатными сервисами из тетради.</dd>
+        </dl>
+      </article>
+      <article class="ai" id="fal">
+        <header class="ai-head"><h3>fal.ai</h3><span class="kind"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5"/></svg>видео по секундам в браузере</span></header>
+        <div class="ai-tags"><span class="price paid">платно</span><span class="tri tri-maybe"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>если не открывается — инструмент из трёх букв</span></div>
+        <dl class="rows">
+          <dt>Что это</dt>
+          <dd>Витрина моделей с кнопками в браузере: видео, картинки, звук. Есть LongCat, MiniMax H3, Kling. Вход через GitHub.</dd>
+          <dt>Где взять</dt>
+          <dd><a class="get" href="https://fal.ai" target="_blank" rel="noopener">Открыть fal.ai</a><br>Сайт fal.ai, вход через аккаунт GitHub.</dd>
+          <dt>Бесплатно</dt>
+          <dd>Подарочных кредитов при регистрации не обещают. Платите за каждую секунду готового видео.</dd>
+          <dt>Лучше всего для</dt>
+          <dd>Пробовать новые модели раньше других и платить только за секунды. Ролик LongCat 720p на 5 секунд стоит около 5 центов.</dd>
+          <dt>Слабее всего</dt>
+          <dd>Всё на английском, цены в долларах.</dd>
+          <dt>Подвох</dt>
+          <dd>Цена растёт с качеством: MiniMax H3 Max в 1080p стоит $0,16 за секунду.</dd>
+        </dl>
+      </article>
+      <article class="ai" id="higgsfield">
+        <header class="ai-head"><h3>Higgsfield</h3><span class="kind"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5"/></svg>много моделей и эффектов</span></header>
+        <div class="ai-tags"><span class="price try">попробовать</span><span class="tri tri-maybe"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>если не открывается — инструмент из трёх букв</span></div>
+        <dl class="rows">
+          <dt>Что это</dt>
+          <dd>Много моделей для картинок и видео в одном месте, готовые эффекты и шаблоны.</dd>
+          <dt>Где взять</dt>
+          <dd><a class="get" href="https://higgsfield.ai" target="_blank" rel="noopener">Открыть Higgsfield</a><br>Сайт higgsfield.ai.</dd>
+          <dt>Бесплатно</dt>
+          <dd>На бесплатном тарифе 0 кредитов. Новичкам один раз дают пробные 100 кредитов.</dd>
+          <dt>Лучше всего для</dt>
+          <dd>Готовые эффекты для роликов в соцсети.</dd>
+          <dt>Слабее всего</dt>
+          <dd>Бесплатно почти ничего. Самый дешёвый тариф около $19 в месяц при оплате за год.</dd>
+          <dt>Подвох</dt>
+          <dd>С бесплатного тарифа результат нельзя брать в работу на заказ и в рекламу.</dd>
+        </dl>
+      </article>
+      <article class="ai" id="atlas">
+        <header class="ai-head"><h3>Atlas Cloud</h3><span class="kind"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5"/></svg>модели для программистов</span></header>
+        <div class="ai-tags"><span class="price paid">платно</span><span class="tri tri-maybe"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>если не открывается — инструмент из трёх букв</span></div>
+        <dl class="rows">
+          <dt>Что это</dt>
+          <dd>Один ключ к сотням моделей: Kling, Wan, Hailuo, Seedance. Работает через код.</dd>
+          <dt>Где взять</dt>
+          <dd><a class="get" href="https://www.atlascloud.ai" target="_blank" rel="noopener">Открыть Atlas Cloud</a><br>Сайт atlascloud.ai.</dd>
+          <dt>Бесплатно</dt>
+          <dd>Нет. Пополнение от $10, к первому пополнению добавляют 20%. Бесплатные кредиты дают авторам открытых проектов на GitHub, по заявке.</dd>
+          <dt>Лучше всего для</dt>
+          <dd>Тем, кто собирает свои сервисы через код или Claude Code.</dd>
+          <dt>Слабее всего</dt>
+          <dd>Новичку без кода не подходит: кнопок для обычного человека тут нет.</dd>
+          <dt>Подвох</dt>
+          <dd>Платите за каждый ролик. Без лимитов в настройках пополнение быстро уходит.</dd>
+        </dl>
+      </article>
+      <div class="hw">
+        <div class="hw-head"><span class="hw-title">Домашняя работа</span><span class="hw-count"></span></div>
+        <ul class="checks">
+          <li><label><input type="checkbox" id="hw2-7-1"><span class="box"></span><span class="txt">Зайдите в most-AI и посмотрите, сколько дают бесплатно после входа.</span></label></li>
+          <li><label><input type="checkbox" id="hw2-7-2"><span class="box"></span><span class="txt">Сравните цену ролика на 5 секунд в most-AI и в fal.ai.</span></label></li>
+        </ul>
+        <span class="grade" aria-hidden="true">5</span>
+      </div>
+    </section>
+
+    <p class="note">Цифры проверены 15 октября 2026 года. Бесплатные лимиты меняются часто: если сайт пишет по-другому, верьте сайту.<br><span class="series">Первая тетрадь: <a href="https://innamardar10-alt.github.io/tetrad/">Бесплатные нейросети</a></span></p>
+  </main>
+</div>
+
+<script>
+(function(){
+  document.documentElement.lang = 'ru';
+
+  // Дата прописью, как в школьной тетради
+  var days = ['первое','второе','третье','четвёртое','пятое','шестое','седьмое','восьмое','девятое','десятое',
+    'одиннадцатое','двенадцатое','тринадцатое','четырнадцатое','пятнадцатое','шестнадцатое','семнадцатое','восемнадцатое','девятнадцатое','двадцатое',
+    'двадцать первое','двадцать второе','двадцать третье','двадцать четвёртое','двадцать пятое','двадцать шестое','двадцать седьмое','двадцать восьмое','двадцать девятое','тридцатое','тридцать первое'];
+  var months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  try{
+    var d = new Date();
+    var t = days[d.getDate()-1] + ' ' + months[d.getMonth()];
+    document.getElementById('today').textContent = t.charAt(0).toUpperCase() + t.slice(1);
+  }catch(e){}
+
+  // Имя на обложке
+  var KEY_NAME = 'tetrad-name';
+  var nameInput = document.getElementById('student-name');
+  try{ var saved = localStorage.getItem(KEY_NAME); if(saved) nameInput.value = saved; }catch(e){}
+  nameInput.addEventListener('input', function(){ try{ localStorage.setItem(KEY_NAME, nameInput.value); }catch(e){} });
+
+  // Домашняя работа и пятёрки
+  var KEY = 'tetrad2-progress-v1';
+  var state = {};
+  try{ state = JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ state = {}; }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+
+  var hws = Array.prototype.slice.call(document.querySelectorAll('.hw'));
+  document.getElementById('total').textContent = hws.length;
+
+  function update(){
+    var fives = 0;
+    hws.forEach(function(hw){
+      var boxes = hw.querySelectorAll('input[type=checkbox]');
+      var n = 0;
+      Array.prototype.forEach.call(boxes, function(b){ if(b.checked) n++; });
+      var c = hw.querySelector('.hw-count');
+      if(c) c.textContent = n + ' из ' + boxes.length;
+      var done = boxes.length > 0 && n === boxes.length;
+      hw.classList.toggle('done', done);
+      if(done) fives++;
+    });
+    document.getElementById('fives').textContent = fives;
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.hw input[type=checkbox]'), function(b){
+    if(state[b.id]) b.checked = true;
+    b.addEventListener('change', function(){ state[b.id] = b.checked; save(); update(); });
+  });
+  update();
+
+  // Кнопки «Скопировать»
+  Array.prototype.forEach.call(document.querySelectorAll('[data-copy]'), function(btn){
+    btn.addEventListener('click', function(){
+      var pre = document.getElementById(btn.getAttribute('data-copy'));
+      var text = pre.textContent;
+      function ok(){ btn.textContent = 'Скопировано'; setTimeout(function(){ btn.textContent = 'Скопировать'; }, 1800); }
+      function fail(){
+        try{
+          var r = document.createRange(); r.selectNodeContents(pre);
+          var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        }catch(e){}
+        btn.textContent = 'Выделено — скопируйте';
+        setTimeout(function(){ btn.textContent = 'Скопировать'; }, 2600);
+      }
+      try{
+        if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(ok, fail); }
+        else fail();
+      }catch(e){ fail(); }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
